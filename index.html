@@ -486,7 +486,10 @@
       </div>
     </div>
     <div style="margin-bottom:14px">
-      <label>偏好号码（最多5个，空白自动随机）</label>
+      <label style="display:flex;justify-content:space-between;align-items:center">
+        <span>偏好号码（最多5个，空白自动随机）</span>
+        <button class="btn btn-secondary" style="width:auto;margin:0;padding:4px 10px;font-size:11px" onclick="t2CachedRands=null;optimizeBudget()">🔀 刷新随机</button>
+      </label>
       <div class="num-inputs">
         <input type="text" maxlength="4" placeholder="----" id="t2-n1" oninput="optimizeBudget()">
         <input type="text" maxlength="4" placeholder="----" id="t2-n2" oninput="optimizeBudget()">
@@ -644,9 +647,12 @@ function analyzeNumber() {
   // EV calculations - Full prize structure (Big)
   // Big: 1st=2500, 2nd=1000, 3rd=500, Special×10=180, Consolation×10=60
   // Small: 1st=3500, 2nd=2000, 3rd=1000
-  // Direct EV per RM1 bet:
-  const evBig = (2500 + 1000 + 500 + 1800 + 600) / 10000; // 0.64
-  const evSmall = (3500 + 2000 + 1000) / 10000; // 0.65
+  // Return per RM1 bet:
+  const evBig = (2500 + 1000 + 500 + 1800 + 600) / 10000; // 0.64 return
+  const evSmall = (3500 + 2000 + 1000) / 10000; // 0.65 return
+  // Net EV (loss) per RM1 bet:
+  const netEvBig = evBig - 1;   // -0.36
+  const netEvSmall = evSmall - 1; // -0.35
 
   // mBox: same EV as direct (probability × payout stays the same)
   const mboxBigOdds = Math.round(2500 / n * 100) / 100;
@@ -716,28 +722,28 @@ function analyzeNumber() {
               <td>RM 1.00</td>
               <td>${fmtProb(1, 10000)}</td>
               <td><span style="color:var(--gold)">RM 2,500</span></td>
-              <td class="ev-negative">${fmtRM(evBig)}</td>
+              <td class="ev-negative">−${fmtRM(Math.abs(netEvBig))}<span style="font-size:10px;color:var(--text-muted)"> /RM1</span></td>
             </tr>
             <tr>
               <td><span class="badge badge-gold">直注 Small</span></td>
               <td>RM 1.00</td>
               <td>${fmtProb(1, 10000)}</td>
               <td><span style="color:var(--gold)">RM 3,500</span></td>
-              <td class="ev-negative">${fmtRM(evSmall)}</td>
+              <td class="ev-negative">−${fmtRM(Math.abs(netEvSmall))}<span style="font-size:10px;color:var(--text-muted)"> /RM1</span></td>
             </tr>
             <tr class="highlight-row">
               <td><span class="badge badge-green">mBox Big</span></td>
               <td>RM 1.00</td>
               <td>${fmtProb(n, 10000)}</td>
               <td><span style="color:var(--gold)">${fmtRM(mboxBigOdds)}</span></td>
-              <td class="ev-negative">${fmtRM(evBig)}</td>
+              <td class="ev-negative">−${fmtRM(Math.abs(netEvBig))}<span style="font-size:10px;color:var(--text-muted)"> /RM1</span></td>
             </tr>
             <tr class="highlight-row">
               <td><span class="badge badge-green">mBox Small</span></td>
               <td>RM 1.00</td>
               <td>${fmtProb(n, 10000)}</td>
               <td><span style="color:var(--gold)">${fmtRM(mboxSmallOdds)}</span></td>
-              <td class="ev-negative">${fmtRM(evSmall)}</td>
+              <td class="ev-negative">−${fmtRM(Math.abs(netEvSmall))}<span style="font-size:10px;color:var(--text-muted)"> /RM1</span></td>
             </tr>
           </tbody>
         </table>
@@ -751,10 +757,10 @@ function analyzeNumber() {
         ${recText}
         <hr class="divider">
         <strong>完整奖金结构（Magnum 4D，每RM1）：</strong><br>
-        Big：一等 RM2,500 | 二等 RM1,000 | 三等 RM500 | Special×10 RM18 | Consolation×10 RM6<br>
-        Small：一等 RM3,500 | 二等 RM2,000 | 三等 RM1,000（无Special/Consolation）<br>
-        Big EV = (2500+1000+500+1800+600)/10000 = <strong>RM0.64</strong>
-        | Small EV = (3500+2000+1000)/10000 = <strong>RM0.65</strong>
+        Big：一等 RM2,500 | 二等 RM1,000 | 三等 RM500 | Special RM180（×10个号）| Consolation RM60（×10个号）<br>
+        Small：一等 RM3,500 | 二等 RM2,000 | 三等 RM1,000（无Special/Consolation奖）<br>
+        Big 回报率 = (2500+1000+500+1800+600)/10000 = <strong>RM0.64</strong>，净亏损 <strong style="color:var(--red)">−RM0.36</strong><br>
+        Small 回报率 = (3500+2000+1000)/10000 = <strong>RM0.65</strong>，净亏损 <strong style="color:var(--red)">−RM0.35</strong>
       </div>
     </div>
   `;
@@ -763,6 +769,22 @@ function analyzeNumber() {
 // ===================== TAB 2 =====================
 
 let t2Pref = 'big';
+let t2CachedRands = null; // Cache random numbers so they don't regenerate on every keystroke
+
+function getT2Nums() {
+  const inputs = ['t2-n1','t2-n2','t2-n3','t2-n4','t2-n5'].map(id => {
+    const v = document.getElementById(id).value.replace(/[^0-9]/g,'');
+    return v.length === 4 ? v : null;
+  });
+  const hasAnyInput = inputs.some(v => v !== null);
+  // Only regenerate cache if no user inputs at all
+  if (!hasAnyInput && !t2CachedRands) {
+    t2CachedRands = Array.from({length: 5}, randomNum);
+  } else if (hasAnyInput) {
+    t2CachedRands = null; // Reset cache when user starts typing
+  }
+  return inputs.map((v, i) => v || (t2CachedRands ? t2CachedRands[i] : randomNum()));
+}
 
 function updateBudgetLabel() {
   const v = document.getElementById('t2-budget').value;
@@ -790,13 +812,7 @@ function randomNum() {
 
 function optimizeBudget() {
   const budget = parseInt(document.getElementById('t2-budget').value);
-  const inputs = ['t2-n1','t2-n2','t2-n3','t2-n4','t2-n5'].map(id => {
-    const v = document.getElementById(id).value.replace(/[^0-9]/g,'');
-    return v.length === 4 ? v : null;
-  });
-
-  // Fill empty with random
-  const nums = inputs.map(n => n || randomNum());
+  const nums = getT2Nums();
 
   // Analyze each
   const analyzed = nums.map(num => {
@@ -913,11 +929,14 @@ function optimizeBudget() {
       <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px">
         总覆盖 ${totalCoverage} / 10,000 个可能号码
       </div>
+      <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">
+        最大可能覆盖（预算全用mBox全不同号）= ${budget * 24} 个
+      </div>
       <div class="prob-bar-wrap" style="height:12px">
-        <div class="prob-bar" style="width:${Math.min(totalProb*100*20,100)}%"></div>
+        <div class="prob-bar" style="width:${Math.min(totalCoverage / (budget * 24) * 100, 100).toFixed(1)}%"></div>
       </div>
       <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-top:4px">
-        <span>0</span><span>500</span><span>1000</span><span>2500</span><span>5000</span><span>10000</span>
+        <span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%（最优）</span>
       </div>
     </div>
   `;
@@ -1207,7 +1226,7 @@ function generateRM10() {
 
     if (b.method === 'Roll') {
       coverage = 10; // Roll covers 10 permutations for last digit
-      odds1st = b.type === 'Small' ? 350 : 250;
+      odds1st = b.type === 'Small' ? 3500 : 2500; // Full prize if any of 10 combos hit
     } else if (b.method === 'mBox') {
       coverage = countPermutations(digits);
       odds1st = Math.round((b.type === 'Small' ? 3500 : 2500) / coverage * 100) / 100;
