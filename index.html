@@ -1274,8 +1274,6 @@ function fmtProb(n, d) {
 
 // ===================== TAB 1 =====================
 
-let t1Pref = 'big';
-
 function analyzeNumber() {
   const raw = document.getElementById('t1-input').value.trim();
   const digits = raw.replace(/[^0-9]/g,'');
@@ -1843,7 +1841,7 @@ function generateRM10() {
     },
     {
       name: '均衡型（推荐）',
-      desc: '覆盖与赔率兼顾 — 3张直注Big RM1 + 2个mBox RM1 + 1个Roll RM4',
+      desc: '覆盖与赔率兼顾 — 3张直注Big RM1 + 2个mBox RM1 + 1个Roll RM5',
       nums: [],
       bets: []
     }
@@ -1866,7 +1864,7 @@ function generateRM10() {
     { num: s2data.direct[2], method:'直注', type:'Big', amount:1 },
     { num: s2data.mbox[0], method:'mBox', type:'Big', amount:1 },
     { num: s2data.mbox[1], method:'mBox', type:'Big', amount:1 },
-    { num: s2data.direct[0].slice(0,3)+'R', method:'Roll', type:'Big', amount:4, note:'首号Roll末位' },
+    { num: s2data.direct[0].slice(0,3)+'R', method:'Roll', type:'Big', amount:5, note:'首号Roll末位' },
   ];
 
   const s = styles[t4Style];
@@ -1883,8 +1881,10 @@ function generateRM10() {
     let odds1st = 0;
 
     if (b.method === 'Roll') {
-      coverage = 10; // Roll covers 10 permutations for last digit
-      odds1st = b.type === 'Small' ? 3500 : 2500; // Full prize if any of 10 combos hit
+      coverage = 10;
+      // Roll = 10 positions × (amount/10) stake each; payout ∝ stake per position
+      const baseOdds = b.type === 'Small' ? 3500 : 2500;
+      odds1st = Math.round(baseOdds * (b.amount / 10) * 100) / 100;
     } else if (b.method === 'mBox') {
       coverage = countPermutations(digits);
       odds1st = Math.round((b.type === 'Small' ? 3500 : 2500) / coverage * 100) / 100;
@@ -1977,7 +1977,7 @@ function generateRM10() {
               <th>类型</th>
               <th>金额/家</th>
               <th>覆盖</th>
-              <th>一等奖赔率</th>
+              <th>一等奖得款</th>
             </tr>
           </thead>
           <tbody>${rows}</tbody>
