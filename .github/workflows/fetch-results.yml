@@ -1,0 +1,42 @@
+name: 抓取4D开奖结果
+
+on:
+  schedule:
+    # 每周三/六/日 21:10 MYT (13:10 UTC) 自动运行
+    # 开奖约 19:00–20:30 MYT，给30分钟余量
+    - cron: '10 13 * * 3'   # 周三
+    - cron: '10 13 * * 6'   # 周六
+    - cron: '10 13 * * 0'   # 周日
+  workflow_dispatch:        # 手动触发
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 抓取开奖结果
+        run: node scripts/fetch-results.js
+
+      - name: 提交更新数据
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/results.json
+          if git diff --staged --quiet; then
+            echo "无新数据，跳过提交"
+          else
+            DRAW_DATE=$(node -e "const d=require('./data/results.json'); console.log(d.draws[0]?.date||'')")
+            git commit -m "开奖结果更新 ${DRAW_DATE}"
+            git push
+            echo "✅ 已推送更新"
+          fi

@@ -1,0 +1,38 @@
+{
+  "lastUpdated": "2026-03-25T21:00:00+08:00",
+  "draws": [
+    {
+      "date": "2026-03-25",
+      "dateDisplay": "2026年3月25日 (三)",
+      "operators": {
+        "magnum": {
+          "name": "万能 Magnum 4D",
+          "drawNo": "345/26",
+          "first": "0342",
+          "second": "6100",
+          "third": "3212",
+          "special": [],
+          "consolation": []
+        },
+        "damacai": {
+          "name": "大马彩 Da Ma Cai",
+          "drawNo": "6055/26",
+          "first": "5129",
+          "second": "5428",
+          "third": "0215",
+          "special": [],
+          "consolation": []
+        },
+        "toto": {
+          "name": "体育彩票 Toto 4D",
+          "drawNo": "6108/26",
+          "first": "8666",
+          "second": "8159",
+          "third": "0185",
+          "special": [],
+          "consolation": []
+        }
+      }
+    }
+  ]
+}
