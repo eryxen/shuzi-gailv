@@ -1,5 +1,19 @@
 {
   "lastUpdated": "2026-03-25T21:00:00+08:00",
+  "jackpots": {
+    "magnum": {
+      "4dJackpot": 25000000,
+      "4dJackpotGold": 12000000
+    },
+    "damacai": {
+      "jackpot1": 5200000,
+      "jackpot2": 100000,
+      "3dJackpot": 320000
+    },
+    "toto": {
+      "4dJackpot": 2000000
+    }
+  },
   "draws": [
     {
       "date": "2026-03-25",

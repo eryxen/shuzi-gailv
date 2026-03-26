@@ -207,6 +207,70 @@ async function fetchAll26myr(date) {
   }
 }
 
+// ─── 奖池金额抓取 ─────────────────────────────────────────────────────────────
+
+function parseRMString(s) {
+  // 解析 "RM 12,345,678.00" 或 "12345678" 为数字
+  if (!s) return 0;
+  const n = parseFloat(String(s).replace(/[^0-9.]/g, ''));
+  return isNaN(n) ? 0 : Math.round(n);
+}
+
+async function fetchJackpots(latestDamacaiRaw) {
+  const jackpots = { magnum: {}, damacai: {}, toto: {} };
+
+  // Damacai 奖池：直接从开奖结果 API 返回值中提取
+  if (latestDamacaiRaw) {
+    try {
+      const d = JSON.parse(latestDamacaiRaw);
+      if (d['1+3DJackpot1']) jackpots.damacai.jackpot1 = parseRMString(d['1+3DJackpot1']);
+      if (d['1+3DJackpot2']) jackpots.damacai.jackpot2 = parseRMString(d['1+3DJackpot2']);
+      if (d['3DJackpot'])    jackpots.damacai['3dJackpot'] = parseRMString(d['3DJackpot']);
+      console.log(`  ✓ Damacai 奖池: J1=${jackpots.damacai.jackpot1} J2=${jackpots.damacai.jackpot2}`);
+    } catch (_) {}
+  }
+
+  // Magnum 奖池：从 /live-draw 端点获取
+  try {
+    const res = await get('https://www.magnum4d.my/live-draw');
+    if (res.status === 200) {
+      const d = JSON.parse(res.data);
+      // 尝试多种字段名
+      const j1 = d.jackpot1Amount || d.jackpotAmount || d['4dJackpot'] || d.jackpot || 0;
+      const j2 = d.jackpot2Amount || d['4dJackpotGold'] || d.jackpotGold || 0;
+      if (j1) jackpots.magnum['4dJackpot'] = parseRMString(j1);
+      if (j2) jackpots.magnum['4dJackpotGold'] = parseRMString(j2);
+      console.log(`  ✓ Magnum 奖池: J1=${jackpots.magnum['4dJackpot']} J2=${jackpots.magnum['4dJackpotGold']}`);
+    }
+  } catch (e) {
+    console.warn(`  [Magnum Jackpot] ${e.message}`);
+    // 备用：从官网首页 HTML 解析
+    try {
+      const res2 = await get('https://www.magnum4d.my/cn');
+      if (res2.status === 200) {
+        const m1 = res2.data.match(/[Jj]ackpot\s*1?[^0-9]*RM\s*([\d,]+)/);
+        const m2 = res2.data.match(/[Gg]old[^0-9]*RM\s*([\d,]+)/);
+        if (m1) jackpots.magnum['4dJackpot'] = parseRMString(m1[1]);
+        if (m2) jackpots.magnum['4dJackpotGold'] = parseRMString(m2[1]);
+      }
+    } catch (_) {}
+  }
+
+  // Toto 奖池：从官网首页 HTML 解析
+  try {
+    const res = await get('http://www.sportstoto.com.my/cn/');
+    if (res.status === 200) {
+      const m = res.data.match(/[Jj]ackpot[^0-9]*RM\s*([\d,]+)/);
+      if (m) jackpots.toto['4dJackpot'] = parseRMString(m[1]);
+      console.log(`  ✓ Toto 奖池: ${jackpots.toto['4dJackpot']}`);
+    }
+  } catch (e) {
+    console.warn(`  [Toto Jackpot] ${e.message}`);
+  }
+
+  return jackpots;
+}
+
 // ─── 主逻辑 ──────────────────────────────────────────────────────────────────
 
 async function main() {
@@ -214,9 +278,20 @@ async function main() {
   console.log(`抓取最近 ${dates.length} 个开奖日期...`);
 
   // Load existing results to merge
-  let existing = { lastUpdated: '', draws: [] };
+  let existing = { lastUpdated: '', draws: [], jackpots: {} };
   try { existing = JSON.parse(fs.readFileSync(OUTPUT, 'utf8')); } catch (_) {}
   const existingByDate = Object.fromEntries(existing.draws.map(d => [d.date, d]));
+
+  // 先抓取今天 Damacai 获取奖池原始数据
+  console.log('\n[奖池] 抓取最新奖池金额...');
+  const today = dates[0];
+  let latestDamacaiRaw = null;
+  try {
+    const dmy = toDMY(today);
+    const res = await get(`https://www.damacai.com.my/callpassresult?pastdate=${encodeURIComponent(dmy)}`);
+    if (res.status === 200) latestDamacaiRaw = res.data;
+  } catch (_) {}
+  const jackpots = await fetchJackpots(latestDamacaiRaw);
 
   const newDraws = [];
 
@@ -288,6 +363,7 @@ async function main() {
 
   const output = {
     lastUpdated: new Date().toISOString(),
+    jackpots,
     draws: trimmed,
   };
 

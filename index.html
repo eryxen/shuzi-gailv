@@ -444,6 +444,238 @@
     margin-bottom: 8px;
     opacity: 0.4;
   }
+
+  /* ===== JACKPOT REFERENCE CARDS ===== */
+  .jackpot-ref-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  .jackpot-ref-card {
+    background: #0f1923;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 140px;
+    flex: 1;
+  }
+
+  .jackpot-ref-card:hover {
+    border-color: var(--gold);
+    background: rgba(240,180,41,0.06);
+    transform: translateY(-1px);
+  }
+
+  .jackpot-ref-card:active {
+    transform: translateY(0);
+  }
+
+  .jackpot-ref-card .jrc-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  .jackpot-ref-card .jrc-amount {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--gold);
+    font-family: 'Courier New', monospace;
+  }
+
+  .jackpot-ref-card .jrc-product {
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  /* ===== ACCORDION (Tab 6) ===== */
+  .accordion-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+
+  .accordion-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+    border-left: 3px solid var(--gold);
+  }
+
+  .accordion-header:hover {
+    background: rgba(240,180,41,0.04);
+  }
+
+  .accordion-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .accordion-title-wrap {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .accordion-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .accordion-subtitle {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .accordion-arrow {
+    font-size: 12px;
+    color: var(--text-muted);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+
+  .accordion-item.open .accordion-arrow {
+    transform: rotate(180deg);
+  }
+
+  .accordion-body {
+    display: none;
+    padding: 0 16px 16px 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .accordion-item.open .accordion-body {
+    display: block;
+  }
+
+  .guide-section-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 14px 0 8px 0;
+  }
+
+  .guide-num {
+    font-family: 'Courier New', monospace;
+    color: var(--blue);
+    font-weight: 600;
+  }
+
+  .guide-tip {
+    background: #0f1923;
+    border-left: 3px solid var(--green);
+    border-radius: 0 6px 6px 0;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--text);
+    margin-top: 12px;
+  }
+
+  .guide-tip strong { color: var(--green); }
+
+  .guide-warn {
+    background: #0f1923;
+    border-left: 3px solid var(--red);
+    border-radius: 0 6px 6px 0;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--text);
+    margin-top: 8px;
+  }
+
+  .guide-warn strong { color: var(--red); }
+
+  .guide-math {
+    background: #0f1923;
+    border-left: 3px solid var(--blue);
+    border-radius: 0 6px 6px 0;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--text);
+    margin-top: 8px;
+    font-family: 'Courier New', monospace;
+    line-height: 1.8;
+  }
+
+  .roll-demo {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  .roll-digit {
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: #0f1923;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Courier New', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--blue);
+  }
+
+  .roll-digit.roll-pos {
+    border-color: var(--gold);
+    color: var(--gold);
+    animation: gold-pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes gold-pulse {
+    0%, 100% { background: rgba(240,180,41,0.08); }
+    50% { background: rgba(240,180,41,0.2); }
+  }
+
+  .small-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .small-guide-card {
+    background: #0f1923;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+  }
+
+  .small-guide-card h4 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+
+  .small-guide-card p {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
 </style>
 </head>
 <body>
@@ -459,6 +691,7 @@
   <button class="tab-btn" onclick="switchTab(2)">Jackpot EV</button>
   <button class="tab-btn" onclick="switchTab(3)">RM10 方案</button>
   <button class="tab-btn" onclick="switchTab(4)">📡 开奖结果</button>
+  <button class="tab-btn" onclick="switchTab(5)">📖 玩法指南</button>
 </div>
 
 <!-- TAB 1: 号码分析器 -->
@@ -518,6 +751,17 @@
 <div class="tab-panel" id="panel-2">
   <div class="card">
     <div class="card-title">奖池参数</div>
+
+    <!-- 实时奖池参考 -->
+    <div style="margin-bottom:18px">
+      <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">
+        当前奖池参考 <span style="font-size:10px;font-weight:400;color:var(--text-muted);text-transform:none;letter-spacing:0">&nbsp;·&nbsp; 点击卡片自动填入</span>
+      </div>
+      <div id="t3-jackpot-ref">
+        <div style="font-size:12px;color:var(--text-muted);padding:12px 0">加载中…</div>
+      </div>
+    </div>
+
     <div class="input-row" style="margin-bottom:14px">
       <div>
         <label>当前奖池金额（RM）</label>
@@ -623,6 +867,349 @@
   <!-- 结果面板 -->
   <div id="t5-results">
     <div class="result-placeholder"><span>📡</span>正在加载开奖数据…</div>
+  </div>
+
+</div>
+
+<!-- TAB 6: 玩法指南 -->
+<div class="tab-panel" id="panel-5">
+
+  <!-- 板块 1: 直注 -->
+  <div class="accordion-item open" id="acc-0">
+    <div class="accordion-header" onclick="toggleAccordion(0)">
+      <span class="accordion-icon">🎯</span>
+      <div class="accordion-title-wrap">
+        <div class="accordion-title">直注（Straight Bet）</div>
+        <div class="accordion-subtitle">号码顺序完全一致才中奖，最基础的玩法</div>
+      </div>
+      <span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p style="font-size:13px;color:var(--text);margin-top:12px;line-height:1.8">
+        选好4位号码（如 <span class="guide-num">1234</span>），开奖号码必须完全一样才算中。
+      </p>
+      <div class="guide-section-title">Big vs Small</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+        <div style="background:#0f1923;border:1px solid var(--border);border-radius:8px;padding:12px">
+          <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:6px">Big 投注</div>
+          <div style="font-size:11px;color:var(--text-muted);line-height:1.7">参与全部23个奖号<br>一等/二等/三等<br>10个特别奖 + 10个安慰奖<br>覆盖面广，赔率较低</div>
+        </div>
+        <div style="background:#0f1923;border:1px solid var(--border);border-radius:8px;padding:12px">
+          <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:6px">Small 投注</div>
+          <div style="font-size:11px;color:var(--text-muted);line-height:1.7">只参与前3个奖号<br>一等/二等/三等<br>无特别奖/安慰奖<br>赔率更高，中奖机会少</div>
+        </div>
+      </div>
+      <div class="guide-section-title">奖金表（每 RM1 投注）</div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr><th>奖项</th><th>Big (RM1)</th><th>Small (RM1)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>一等奖</td><td style="color:var(--gold);font-weight:700">RM 2,500</td><td style="color:var(--gold);font-weight:700">RM 3,500</td></tr>
+            <tr><td>二等奖</td><td style="color:var(--gold)">RM 1,000</td><td style="color:var(--gold)">RM 2,000</td></tr>
+            <tr><td>三等奖</td><td style="color:var(--gold)">RM 500</td><td style="color:var(--gold)">RM 1,000</td></tr>
+            <tr><td>特别奖 ×10</td><td style="color:var(--text-muted)">RM 180</td><td style="color:var(--text-muted)">—</td></tr>
+            <tr><td>安慰奖 ×10</td><td style="color:var(--text-muted)">RM 60</td><td style="color:var(--text-muted)">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="guide-tip">
+        <strong>建议：</strong>对特定号码非常有把握时选直注；追求最高单注赔率时选 Small。
+      </div>
+    </div>
+  </div>
+
+  <!-- 板块 2: Roll -->
+  <div class="accordion-item" id="acc-1">
+    <div class="accordion-header" onclick="toggleAccordion(1)">
+      <span class="accordion-icon">🎲</span>
+      <div class="accordion-title-wrap">
+        <div class="accordion-title">Roll（包号 / 滚位）</div>
+        <div class="accordion-subtitle">固定3位，第4位用「R」替代，自动覆盖0-9共10注</div>
+      </div>
+      <span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p style="font-size:13px;color:var(--text);margin-top:12px;line-height:1.8">
+        输入格式：<span class="guide-num">123R</span>（R 可以放在任意一位）
+      </p>
+      <div class="guide-section-title">示例：123R 展开</div>
+      <div class="roll-demo">
+        <div class="roll-digit">1</div>
+        <div class="roll-digit">2</div>
+        <div class="roll-digit">3</div>
+        <div class="roll-digit roll-pos">R</div>
+      </div>
+      <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:4px">
+        <span class="perm-tag">1230</span><span class="perm-tag">1231</span><span class="perm-tag">1232</span>
+        <span class="perm-tag">1233</span><span class="perm-tag">1234</span><span class="perm-tag">1235</span>
+        <span class="perm-tag">1236</span><span class="perm-tag">1237</span><span class="perm-tag">1238</span>
+        <span class="perm-tag">1239</span>
+      </div>
+      <div class="guide-section-title">Roll 位置选项</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px">
+        <div style="text-align:center">
+          <div style="display:flex;gap:2px;justify-content:center;margin-bottom:4px">
+            <div class="roll-digit roll-pos" style="width:28px;height:28px;font-size:12px">R</div>
+            <div class="roll-digit" style="width:28px;height:28px;font-size:12px">2</div>
+            <div class="roll-digit" style="width:28px;height:28px;font-size:12px">3</div>
+            <div class="roll-digit" style="width:28px;height:28px;font-size:12px">4</div>
+          </div>
+          <div style="font-size:10px;color:var(--text-muted)">千位R</div>
+        </div>
+        <div style="text-align:center">
+          <div style="display:flex;gap:2px;justify-content:center;margin-bottom:4px">
+            <div class="roll-digit" style="width:28px;height:28px;font-size:12px">1</div>
+            <div class="roll-digit roll-pos" style="width:28px;height:28px;font-size:12px">R</div>
+            <div class="roll-digit" style="width:28px;height:28px;font-size:12px">3</div>
+            <div class="roll-digit" style="width:28px;height:28px;font-size:12px">4</div>
+          </div>
+          <div style="font-size:10px;color:var(--text-muted)">百位R</div>
+        </div>
+        <div style="text-align:center">
+          <div style="display:flex;gap:2px;justify-content:center;margin-bottom:4px">
+            <div class="roll-digit" style="width:28px;height:28px;font-size:12px">1</div>
+            <div class="roll-digit" style="width:28px;height:28px;font-size:12px">2</div>
+            <div class="roll-digit roll-pos" style="width:28px;height:28px;font-size:12px">R</div>
+            <div class="roll-digit" style="width:28px;height:28px;font-size:12px">4</div>
+          </div>
+          <div style="font-size:10px;color:var(--text-muted)">十位R</div>
+        </div>
+        <div style="text-align:center">
+          <div style="display:flex;gap:2px;justify-content:center;margin-bottom:4px">
+            <div class="roll-digit" style="width:28px;height:28px;font-size:12px">1</div>
+            <div class="roll-digit" style="width:28px;height:28px;font-size:12px">2</div>
+            <div class="roll-digit" style="width:28px;height:28px;font-size:12px">3</div>
+            <div class="roll-digit roll-pos" style="width:28px;height:28px;font-size:12px">R</div>
+          </div>
+          <div style="font-size:10px;color:var(--text-muted)">个位R</div>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>特性</th><th>数值</th></tr></thead>
+          <tbody>
+            <tr><td>成本</td><td style="color:var(--gold);font-weight:700">RM 10</td></tr>
+            <tr><td>覆盖号码数</td><td style="color:var(--blue)">10 个</td></tr>
+            <tr><td>中奖概率</td><td>10 / 10,000 = <span style="color:var(--green)">0.1%</span></td></tr>
+            <tr><td>中奖赔率</td><td style="color:var(--gold)">完整奖金（非均摊）</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="guide-tip">
+        <strong>建议：</strong>你猜到前3位数字，对末位不确定时使用。比买10张直注更直观，中奖获完整赔率。
+      </div>
+    </div>
+  </div>
+
+  <!-- 板块 3: iBox -->
+  <div class="accordion-item" id="acc-2">
+    <div class="accordion-header" onclick="toggleAccordion(2)">
+      <span class="accordion-icon">📦</span>
+      <div class="accordion-title-wrap">
+        <div class="accordion-title">包字 / iBox（Box Bet）</div>
+        <div class="accordion-subtitle">号码的任意排列顺序都算中奖</div>
+      </div>
+      <span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p style="font-size:13px;color:var(--text);margin-top:12px;line-height:1.8">
+        选号码 <span class="guide-num">1234</span>，系统生成所有排列：<span class="guide-num">1234</span>、<span class="guide-num">1243</span>、<span class="guide-num">1324</span>… 共24种，任意一种开出即中奖。
+      </p>
+      <p style="font-size:12px;color:var(--text-muted);margin-top:4px">成本 = 排列数 × RM1</p>
+      <div class="guide-section-title">排列数对照表</div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>号码类型</th><th>示例</th><th>排列数</th><th>成本</th></tr></thead>
+          <tbody>
+            <tr><td>4个相同</td><td><span class="guide-num">1111</span></td><td>1</td><td style="color:var(--green);font-weight:700">RM 1</td></tr>
+            <tr><td>3个相同</td><td><span class="guide-num">1112</span></td><td>4</td><td style="color:var(--green)">RM 4</td></tr>
+            <tr><td>2对相同</td><td><span class="guide-num">1122</span></td><td>6</td><td style="color:var(--green)">RM 6</td></tr>
+            <tr><td>1对相同</td><td><span class="guide-num">1123</span></td><td>12</td><td style="color:var(--text-muted)">RM 12</td></tr>
+            <tr><td>全不同</td><td><span class="guide-num">1234</span></td><td>24</td><td style="color:var(--red)">RM 24</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:12px;color:var(--text-muted);margin-top:10px">中奖赔率不变——中一等奖仍得完整 RM2,500 / RM3,500。中奖概率 = 排列数 / 10,000。</p>
+      <div class="guide-tip">
+        <strong>建议：</strong>知道4个数字但不确定顺序时用包字。全不同号码成本较高（RM24），重复越多越划算。
+      </div>
+    </div>
+  </div>
+
+  <!-- 板块 4: mBox -->
+  <div class="accordion-item" id="acc-3">
+    <div class="accordion-header" onclick="toggleAccordion(3)">
+      <span class="accordion-icon">💡</span>
+      <div class="accordion-title-wrap">
+        <div class="accordion-title">mBox（迷你包字）</div>
+        <div class="accordion-subtitle">RM1 就能覆盖所有排列，但赔率按比例缩小</div>
+      </div>
+      <span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p style="font-size:13px;color:var(--text);margin-top:12px;line-height:1.8">
+        只需 <span style="color:var(--gold);font-weight:700">RM 1</span>，就能用包字方式投注任何号码。赔率 = 原赔率 ÷ 排列数。
+      </p>
+      <div class="guide-section-title">mBox 赔率表（一等奖）</div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>排列数</th><th>示例</th><th>一等奖 Big</th><th>一等奖 Small</th></tr></thead>
+          <tbody>
+            <tr class="highlight-row"><td>1（如1111）</td><td><span class="guide-num">1111</span></td><td style="color:var(--gold);font-weight:700">RM 2,500</td><td style="color:var(--gold);font-weight:700">RM 3,500</td></tr>
+            <tr><td>4（如1112）</td><td><span class="guide-num">1112</span></td><td style="color:var(--gold)">RM 625</td><td style="color:var(--gold)">RM 875</td></tr>
+            <tr><td>6（如1122）</td><td><span class="guide-num">1122</span></td><td style="color:var(--gold)">RM 416.67</td><td style="color:var(--gold)">RM 583.33</td></tr>
+            <tr><td>12（如1123）</td><td><span class="guide-num">1123</span></td><td style="color:var(--text-muted)">RM 208.33</td><td style="color:var(--text-muted)">RM 291.67</td></tr>
+            <tr><td>24（如1234）</td><td><span class="guide-num">1234</span></td><td style="color:var(--text-muted)">RM 104.17</td><td style="color:var(--text-muted)">RM 145.83</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="guide-math">
+        期望值（mBox）= 期望值（直注）<br>
+        数学上两者完全等价，区别只在赔率分配方式
+      </div>
+      <div class="guide-tip">
+        <strong>建议：</strong>预算有限又想覆盖多排列时选mBox。重复数字越多越适合——<span class="guide-num">1111</span> 的 mBox = 直注，完全无损。
+      </div>
+    </div>
+  </div>
+
+  <!-- 板块 5: 4D Jackpot -->
+  <div class="accordion-item" id="acc-4">
+    <div class="accordion-header" onclick="toggleAccordion(4)">
+      <span class="accordion-icon">🏆</span>
+      <div class="accordion-title-wrap">
+        <div class="accordion-title">4D Jackpot（积宝玩法）</div>
+        <div class="accordion-subtitle">一注选两个号码，两个都中才赢大奖池</div>
+      </div>
+      <span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p style="font-size:13px;color:var(--text);margin-top:12px;line-height:1.8">
+        每注选2个4位号码，票价 <span style="color:var(--gold);font-weight:700">RM 2 / 注</span>。
+      </p>
+      <div class="guide-section-title">中奖条件</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
+        <div style="background:#0f1923;border-radius:6px;padding:10px 12px;border-left:3px solid var(--gold)">
+          <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:3px">Jackpot 1（大奖池，数千万）</div>
+          <div style="font-size:11px;color:var(--text-muted)">两个号码都在前三名内</div>
+        </div>
+        <div style="background:#0f1923;border-radius:6px;padding:10px 12px;border-left:3px solid var(--blue)">
+          <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:3px">Jackpot 2（较小奖池）</div>
+          <div style="font-size:11px;color:var(--text-muted)">其中一个在前三名内，另一个在特别奖内</div>
+        </div>
+        <div style="background:#0f1923;border-radius:6px;padding:10px 12px;border-left:3px solid var(--text-muted)">
+          <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:3px">普通赔付</div>
+          <div style="font-size:11px;color:var(--text-muted)">只中一个前三名 → 按直注赔率赔付</div>
+        </div>
+      </div>
+      <div class="guide-section-title">数学分析</div>
+      <div class="guide-math">
+EV = 奖池 × (1/500,000) − RM2<br>
+奖池需超过 RM1,000,000 时 EV 才转正<br>
+中奖概率：约 1/500,000
+      </div>
+      <div class="guide-warn">
+        <strong>注意：</strong>奖池累积到大额时（如超 RM1000万）才数学上有正期望，平时主要靠娱乐价值。可用 <strong>Jackpot EV</strong> Tab 实时计算当前期望值。
+      </div>
+    </div>
+  </div>
+
+  <!-- 板块 6: 其他玩法 -->
+  <div class="accordion-item" id="acc-5">
+    <div class="accordion-header" onclick="toggleAccordion(5)">
+      <span class="accordion-icon">🎰</span>
+      <div class="accordion-title-wrap">
+        <div class="accordion-title">其他玩法简介</div>
+        <div class="accordion-subtitle">Magnum Life · mgold · 6D 等特色玩法</div>
+      </div>
+      <span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <div class="small-cards-grid" style="margin-top:12px">
+        <div class="small-guide-card">
+          <h4>🟡 Magnum Life</h4>
+          <p>选8个数字（1–36），匹配6个开奖号码<br>奖金：<span style="color:var(--gold);font-weight:600">RM 1,000/天 × 20年</span><br>票价：RM 1/注<br>一等奖总计约 RM 730万</p>
+        </div>
+        <div class="small-guide-card">
+          <h4>🟡 mgold（6位数）</h4>
+          <p>选6位数字（000000–999999）<br>奖金：<span style="color:var(--gold);font-weight:600">约 RM 700,000</span><br>票价：RM 1/注<br>概率：1/1,000,000</p>
+        </div>
+        <div class="small-guide-card">
+          <h4>🔵 6D（体育彩票）</h4>
+          <p>选6位数字，多级赔率<br>匹配 6位：<span style="color:var(--gold);font-weight:600">RM 100,000</span><br>匹配 5位/4位/3位均有奖<br>票价：RM 1/注</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 板块 7: 对比总结 -->
+  <div class="accordion-item" id="acc-6">
+    <div class="accordion-header" onclick="toggleAccordion(6)">
+      <span class="accordion-icon">📊</span>
+      <div class="accordion-title-wrap">
+        <div class="accordion-title">玩法对比总结表</div>
+        <div class="accordion-subtitle">各玩法成本、概率、赔率一览</div>
+      </div>
+      <span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <div style="overflow-x:auto;margin-top:12px">
+        <table>
+          <thead>
+            <tr>
+              <th>玩法</th>
+              <th>成本</th>
+              <th>中奖概率</th>
+              <th>一等奖</th>
+              <th>最适合情况</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="highlight-row">
+              <td><span class="badge badge-gold">直注 Small</span></td>
+              <td style="color:var(--green)">RM 1</td>
+              <td>1 / 10,000</td>
+              <td style="color:var(--gold);font-weight:700">RM 3,500</td>
+              <td style="font-size:11px;color:var(--text-muted)">对特定号码确定</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-gold">Roll</span></td>
+              <td style="color:var(--text-muted)">RM 10</td>
+              <td>10 / 10,000</td>
+              <td style="color:var(--gold)">RM 3,500</td>
+              <td style="font-size:11px;color:var(--text-muted)">知道3位，不确定1位</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-red">包字 全不同</span></td>
+              <td style="color:var(--red)">RM 24</td>
+              <td>24 / 10,000</td>
+              <td style="color:var(--gold)">RM 2,500</td>
+              <td style="font-size:11px;color:var(--text-muted)">知道4个数字不知顺序</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-green">mBox</span></td>
+              <td style="color:var(--green)">RM 1</td>
+              <td>N / 10,000</td>
+              <td style="color:var(--text-muted)">按比例缩减</td>
+              <td style="font-size:11px;color:var(--text-muted)">预算少但要覆盖排列</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-blue">4D Jackpot</span></td>
+              <td style="color:var(--text-muted)">RM 2</td>
+              <td>1 / 500,000</td>
+              <td style="color:var(--gold);font-weight:700">数千万</td>
+              <td style="font-size:11px;color:var(--text-muted)">奖池高时娱乐性强</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-top:12px;font-size:11px;color:var(--text-muted);line-height:1.8;background:#0f1923;padding:10px 14px;border-radius:6px">
+        所有玩法的理论期望值均小于 1（彩票的数学本质），以上对比是在固定亏损框架内的策略优化。<br>
+        理性投注，量力而为。
+      </div>
+    </div>
   </div>
 
 </div>
@@ -1448,6 +2035,77 @@ function genMixed() {
   return { nums: [...directNums, ...mboxNums], direct: directNums, mbox: mboxNums };
 }
 
+// ===================== TAB 3: JACKPOT REFERENCE =====================
+
+let jackpotsLoaded = false;
+
+async function loadJackpots() {
+  if (jackpotsLoaded) return;
+  const container = document.getElementById('t3-jackpot-ref');
+  if (!container) return;
+
+  try {
+    const res = await fetch('./data/results.json?_=' + Date.now());
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+
+    if (!data.jackpots || Object.keys(data.jackpots).length === 0) {
+      container.innerHTML = '<div style="font-size:12px;color:var(--text-muted);padding:8px 0;font-style:italic">数据更新中，请手动输入奖池金额</div>';
+      return;
+    }
+
+    const opMeta = {
+      magnum:  { icon: '🟡', label: 'Magnum', color: '#f0b429',
+        keys: { '4dJackpot': '4D Jackpot', '4dJackpotGold': '4D Jackpot Gold' } },
+      damacai: { icon: '🔴', label: 'Da Ma Cai', color: '#ff6b6b',
+        keys: { 'jackpot1': 'Jackpot 1', 'jackpot2': 'Jackpot 2', '3dJackpot': '3D Jackpot' } },
+      toto:    { icon: '🔵', label: 'Sports Toto', color: '#4dabf7',
+        keys: { '4dJackpot': '4D Jackpot' } },
+    };
+
+    const cards = [];
+    for (const [opKey, opInfo] of Object.entries(opMeta)) {
+      const opData = data.jackpots[opKey];
+      if (!opData) continue;
+      for (const [dataKey, productLabel] of Object.entries(opInfo.keys)) {
+        if (opData[dataKey] == null) continue;
+        const amount = opData[dataKey];
+        const fmtAmt = 'RM ' + Number(amount).toLocaleString('en-MY');
+        cards.push(`
+          <div class="jackpot-ref-card" onclick="fillJackpotPool(${amount})" title="点击填入 ${fmtAmt}">
+            <div class="jrc-header">
+              <span>${opInfo.icon}</span>
+              <span style="color:${opInfo.color}">${opInfo.label}</span>
+            </div>
+            <div class="jrc-amount">${fmtAmt}</div>
+            <div class="jrc-product">${productLabel}</div>
+          </div>`);
+      }
+    }
+
+    if (cards.length === 0) {
+      container.innerHTML = '<div style="font-size:12px;color:var(--text-muted);padding:8px 0;font-style:italic">数据更新中，请手动输入奖池金额</div>';
+      return;
+    }
+
+    container.innerHTML = `<div class="jackpot-ref-grid">${cards.join('')}</div>`;
+    jackpotsLoaded = true;
+  } catch (e) {
+    container.innerHTML = '<div style="font-size:12px;color:var(--text-muted);padding:8px 0;font-style:italic">数据更新中，请手动输入奖池金额</div>';
+  }
+}
+
+function fillJackpotPool(amount) {
+  const input = document.getElementById('t3-pool');
+  if (input) {
+    input.value = amount;
+    calcJackpot();
+    input.focus();
+    input.style.borderColor = 'var(--green)';
+    setTimeout(() => { input.style.borderColor = ''; }, 1000);
+  }
+}
+
 // ===================== TAB 5: 开奖结果 =====================
 
 let t5Data = null;
@@ -1562,9 +2220,17 @@ function stopT5Refresh() {
 function switchTab(idx) {
   document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', i===idx));
   document.querySelectorAll('.tab-panel').forEach((p,i) => p.classList.toggle('active', i===idx));
-  if (idx === 2) setTimeout(() => calcJackpot(), 50);
+  if (idx === 2) { setTimeout(() => calcJackpot(), 50); loadJackpots(); }
   if (idx === 4) { loadResults(); startT5Refresh(); }
   else stopT5Refresh();
+}
+
+// ===================== TAB 6: 玩法指南 =====================
+
+function toggleAccordion(idx) {
+  const item = document.getElementById('acc-' + idx);
+  if (!item) return;
+  item.classList.toggle('open');
 }
 
 // ===================== INIT =====================
