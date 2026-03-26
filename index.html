@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4D 彩票数学分析工具</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f1923;
+    --card: #1a2738;
+    --card2: #1f3048;
+    --border: #2a3f5a;
+    --gold: #f0b429;
+    --gold-dim: #c8942a;
+    --text: #e2e8f0;
+    --text-muted: #8aa0b8;
+    --green: #38d9a9;
+    --red: #ff6b6b;
+    --blue: #4dabf7;
+    --accent: #3d7bd4;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  header {
+    background: linear-gradient(135deg, #0d1f33 0%, #1a2f4a 100%);
+    border-bottom: 2px solid var(--gold);
+    padding: 18px 24px;
+    text-align: center;
+  }
+
+  header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 1px;
+  }
+
+  header p {
+    color: var(--text-muted);
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  .tabs-wrapper {
+    display: flex;
+    background: #0d1a26;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .tabs-wrapper::-webkit-scrollbar { display: none; }
+
+  .tab-btn {
+    flex: 1;
+    min-width: 90px;
+    padding: 13px 10px;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .tab-btn:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+
+  .tab-btn.active {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+    background: rgba(240,180,41,0.05);
+  }
+
+  .tab-panel { display: none; padding: 20px 16px; max-width: 900px; margin: 0 auto; }
+  .tab-panel.active { display: block; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 16px;
+  }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 14px;
+    background: var(--gold);
+    border-radius: 2px;
+  }
+
+  label {
+    display: block;
+    color: var(--text-muted);
+    font-size: 12px;
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+
+  input[type="text"], input[type="number"] {
+    width: 100%;
+    background: #0f1923;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-size: 15px;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 3px;
+    transition: border-color 0.2s;
+  }
+
+  input[type="text"]:focus, input[type="number"]:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 2px rgba(240,180,41,0.1);
+  }
+
+  input[type="range"] {
+    width: 100%;
+    accent-color: var(--gold);
+    cursor: pointer;
+  }
+
+  .btn {
+    background: linear-gradient(135deg, #c8942a, var(--gold));
+    color: #0f1923;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(240,180,41,0.3); }
+  .btn:active { transform: translateY(0); }
+
+  .btn-secondary {
+    background: var(--card2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .btn-secondary:hover { background: var(--border); box-shadow: none; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  th {
+    background: #0f1923;
+    color: var(--gold);
+    padding: 9px 10px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  td {
+    padding: 9px 10px;
+    border-bottom: 1px solid rgba(42,63,90,0.5);
+    color: var(--text);
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .badge-gold { background: rgba(240,180,41,0.15); color: var(--gold); }
+  .badge-green { background: rgba(56,217,169,0.15); color: var(--green); }
+  .badge-red { background: rgba(255,107,107,0.15); color: var(--red); }
+  .badge-blue { background: rgba(77,171,247,0.15); color: var(--blue); }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .stat-box {
+    background: #0f1923;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+  }
+
+  .stat-val {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gold);
+    font-family: 'Courier New', monospace;
+    line-height: 1.2;
+  }
+
+  .stat-lbl {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 3px;
+  }
+
+  .perm-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .perm-tag {
+    background: #0f1923;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: var(--blue);
+  }
+
+  .ev-positive { color: var(--green); font-weight: 600; }
+  .ev-negative { color: var(--red); font-weight: 600; }
+  .ev-neutral { color: var(--text-muted); }
+
+  .conclusion-box {
+    background: #0f1923;
+    border-left: 3px solid var(--gold);
+    border-radius: 0 6px 6px 0;
+    padding: 12px 14px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .conclusion-box strong { color: var(--gold); }
+
+  .input-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  @media (max-width: 480px) {
+    .input-row { grid-template-columns: 1fr; }
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .slider-val {
+    min-width: 60px;
+    text-align: right;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--gold);
+    font-family: 'Courier New', monospace;
+  }
+
+  .radio-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+
+  .radio-btn {
+    flex: 1;
+    min-width: 80px;
+    padding: 8px 12px;
+    background: #0f1923;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    user-select: none;
+  }
+
+  .radio-btn:hover { border-color: var(--gold); color: var(--text); }
+  .radio-btn.selected { border-color: var(--gold); background: rgba(240,180,41,0.1); color: var(--gold); }
+
+  .num-inputs {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+
+  @media (max-width: 400px) {
+    .num-inputs { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .num-inputs input {
+    text-align: center;
+    padding: 10px 4px;
+    letter-spacing: 2px;
+  }
+
+  #jackpot-canvas {
+    width: 100%;
+    border-radius: 8px;
+    background: #0f1923;
+    display: block;
+  }
+
+  .style-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .style-card {
+    background: #0f1923;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .style-card:hover { border-color: var(--gold); }
+  .style-card.selected { border-color: var(--gold); background: rgba(240,180,41,0.05); }
+
+  .style-card h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+
+  .style-card p {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 14px 0;
+  }
+
+  .note {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 6px;
+  }
+
+  footer {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-muted);
+    font-size: 11px;
+    border-top: 1px solid var(--border);
+    margin-top: 20px;
+    line-height: 1.7;
+  }
+
+  .highlight-row td { background: rgba(240,180,41,0.06) !important; }
+
+  .prob-bar-wrap {
+    background: #0f1923;
+    border-radius: 4px;
+    height: 6px;
+    width: 100%;
+    margin-top: 4px;
+    overflow: hidden;
+  }
+
+  .prob-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--gold));
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+
+  .section-subtitle {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+
+  .result-placeholder {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 30px;
+    font-size: 13px;
+  }
+
+  .result-placeholder span {
+    font-size: 30px;
+    display: block;
+    margin-bottom: 8px;
+    opacity: 0.4;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>4D 彩票数学分析工具</h1>
+  <p>Malaysia 4D · 数学教育与娱乐参考 · Magnum 4D 奖金结构</p>
+</header>
+
+<div class="tabs-wrapper">
+  <button class="tab-btn active" onclick="switchTab(0)">号码分析器</button>
+  <button class="tab-btn" onclick="switchTab(1)">预算优化器</button>
+  <button class="tab-btn" onclick="switchTab(2)">Jackpot EV</button>
+  <button class="tab-btn" onclick="switchTab(3)">RM10 方案</button>
+</div>
+
+<!-- TAB 1: 号码分析器 -->
+<div class="tab-panel active" id="panel-0">
+  <div class="card">
+    <div class="card-title">输入号码</div>
+    <label>4位数字（0–9，例如 1234 / 1123 / 1122）</label>
+    <input type="text" id="t1-input" maxlength="4" placeholder="输入4位数字" oninput="analyzeNumber()">
+    <p class="note">支持重复数字，如 1123、5566、1111</p>
+  </div>
+
+  <div id="t1-results">
+    <div class="result-placeholder"><span>🔢</span>请输入4位号码查看分析结果</div>
+  </div>
+</div>
+
+<!-- TAB 2: 预算覆盖优化器 -->
+<div class="tab-panel" id="panel-1">
+  <div class="card">
+    <div class="card-title">投注参数</div>
+    <div style="margin-bottom:14px">
+      <label>预算（RM）</label>
+      <div class="slider-row">
+        <input type="range" id="t2-budget" min="1" max="50" value="10" oninput="updateBudgetLabel();optimizeBudget()">
+        <div class="slider-val" id="t2-budget-lbl">RM10</div>
+      </div>
+    </div>
+    <div style="margin-bottom:14px">
+      <label>偏好号码（最多5个，空白自动随机）</label>
+      <div class="num-inputs">
+        <input type="text" maxlength="4" placeholder="----" id="t2-n1" oninput="optimizeBudget()">
+        <input type="text" maxlength="4" placeholder="----" id="t2-n2" oninput="optimizeBudget()">
+        <input type="text" maxlength="4" placeholder="----" id="t2-n3" oninput="optimizeBudget()">
+        <input type="text" maxlength="4" placeholder="----" id="t2-n4" oninput="optimizeBudget()">
+        <input type="text" maxlength="4" placeholder="----" id="t2-n5" oninput="optimizeBudget()">
+      </div>
+    </div>
+    <div>
+      <label>投注偏好</label>
+      <div class="radio-group" id="t2-pref">
+        <div class="radio-btn selected" onclick="selectPref(this,'big')">Big</div>
+        <div class="radio-btn" onclick="selectPref(this,'small')">Small</div>
+        <div class="radio-btn" onclick="selectPref(this,'half')">各半</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="t2-results">
+    <div class="result-placeholder"><span>💰</span>调整参数后自动生成最优方案</div>
+  </div>
+</div>
+
+<!-- TAB 3: Jackpot EV -->
+<div class="tab-panel" id="panel-2">
+  <div class="card">
+    <div class="card-title">奖池参数</div>
+    <div class="input-row" style="margin-bottom:14px">
+      <div>
+        <label>当前奖池金额（RM）</label>
+        <input type="number" id="t3-pool" value="1000000" min="0" step="100000" oninput="calcJackpot()">
+      </div>
+      <div>
+        <label>票价（RM）</label>
+        <input type="number" id="t3-price" value="2" min="1" step="1" oninput="calcJackpot()">
+      </div>
+    </div>
+    <div>
+      <label>预计平分人数：<span id="t3-split-lbl" style="color:var(--gold);font-weight:700">1</span> 人</label>
+      <input type="range" id="t3-split" min="1" max="10" value="1" oninput="updateSplitLabel();calcJackpot()">
+    </div>
+  </div>
+
+  <div id="t3-results"></div>
+
+  <div class="card">
+    <div class="card-title">EV 折线图</div>
+    <p class="section-subtitle">奖池金额 vs 期望值（X轴 0–3000万，以当前票价与平分人数计算）</p>
+    <canvas id="jackpot-canvas" height="220"></canvas>
+  </div>
+</div>
+
+<!-- TAB 4: RM10 方案 -->
+<div class="tab-panel" id="panel-3">
+  <div class="card">
+    <div class="card-title">选择投注风格</div>
+    <div class="style-cards">
+      <div class="style-card selected" id="style-0" onclick="selectStyle(0)">
+        <h3>稳健型</h3>
+        <p>最大化覆盖号码数<br>5个mBox，各RM2<br>重复数字号码优先</p>
+      </div>
+      <div class="style-card" id="style-1" onclick="selectStyle(1)">
+        <h3>冲刺型</h3>
+        <p>追求最高赔率<br>2张直注Small + 1张Roll<br>全不同号码直注</p>
+      </div>
+      <div class="style-card" id="style-2" onclick="selectStyle(2)">
+        <h3>均衡型（推荐）</h3>
+        <p>覆盖与赔率兼顾<br>直注+mBox+Roll组合<br>平衡风险与回报</p>
+      </div>
+    </div>
+    <button class="btn" onclick="generateRM10()">生成方案</button>
+  </div>
+
+  <div id="t4-results">
+    <div class="result-placeholder"><span>🎯</span>选择风格后点击生成方案</div>
+  </div>
+</div>
+
+<footer>
+  本工具仅供数学教育与娱乐参考 · 彩票为随机事件，过往结果不影响未来 · 理性投注，量力而为<br>
+  奖金结构参考 Magnum 4D 官方规则（实际以官方公布为准）· EV 计算基于理论期望，不代表实际回报
+</footer>
+
+<script>
+// ===================== UTILITIES =====================
+
+function factorial(n) {
+  if (n <= 1) return 1;
+  let r = 1;
+  for (let i = 2; i <= n; i++) r *= i;
+  return r;
+}
+
+function countPermutations(digits) {
+  // digits is array of 4 chars
+  const freq = {};
+  for (const d of digits) freq[d] = (freq[d] || 0) + 1;
+  const denom = Object.values(freq).reduce((a, b) => a * factorial(b), 1);
+  return factorial(4) / denom;
+}
+
+function getUniquePerms(digits) {
+  const set = new Set();
+  const arr = [...digits];
+  function perm(a, current) {
+    if (current.length === 4) { set.add(current); return; }
+    for (let i = 0; i < a.length; i++) {
+      if (i > 0 && a[i] === a[i-1]) continue;
+      const next = [...a];
+      next.splice(i, 1);
+      perm(next, current + a[i]);
+    }
+  }
+  perm(arr.slice().sort(), '');
+  return [...set];
+}
+
+function getPatternName(digits) {
+  const freq = {};
+  for (const d of digits) freq[d] = (freq[d] || 0) + 1;
+  const vals = Object.values(freq).sort((a,b)=>b-a);
+  if (vals[0] === 4) return '4个相同（1排列）';
+  if (vals[0] === 3) return '3个相同（4排列）';
+  if (vals[0] === 2 && vals[1] === 2) return '两对相同（6排列）';
+  if (vals[0] === 2 && vals.length === 3) return '一对相同（12排列）';
+  return '全不同（24排列）';
+}
+
+function fmtRM(v) {
+  return 'RM ' + v.toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function fmtProb(n, d) {
+  return n + ' / ' + d.toLocaleString();
+}
+
+// ===================== TAB 1 =====================
+
+let t1Pref = 'big';
+
+function analyzeNumber() {
+  const raw = document.getElementById('t1-input').value.trim();
+  const digits = raw.replace(/[^0-9]/g,'');
+  document.getElementById('t1-input').value = digits;
+
+  if (digits.length !== 4) {
+    document.getElementById('t1-results').innerHTML = '<div class="result-placeholder"><span>🔢</span>请输入完整的4位数字</div>';
+    return;
+  }
+
+  const perms = getUniquePerms(digits);
+  const n = perms.length;
+  const pattern = getPatternName(digits);
+
+  // EV calculations - Full prize structure (Big)
+  // Big: 1st=2500, 2nd=1000, 3rd=500, Special×10=180, Consolation×10=60
+  // Small: 1st=3500, 2nd=2000, 3rd=1000
+  // Direct EV per RM1 bet:
+  const evBig = (2500 + 1000 + 500 + 1800 + 600) / 10000; // 0.64
+  const evSmall = (3500 + 2000 + 1000) / 10000; // 0.65
+
+  // mBox: same EV as direct (probability × payout stays the same)
+  const mboxBigOdds = Math.round(2500 / n * 100) / 100;
+  const mboxSmallOdds = Math.round(3500 / n * 100) / 100;
+
+  // Determine recommendation
+  let recColor, recText;
+  if (n <= 4) {
+    recColor = 'var(--green)';
+    recText = `排列数仅 <strong>${n}</strong>，强烈推荐 <strong>mBox</strong>。赔率仅缩减 ${n} 倍但覆盖所有 ${n} 个排列，性价比极高。`;
+  } else if (n <= 12) {
+    recColor = 'var(--gold)';
+    recText = `排列数 <strong>${n}</strong>，mBox 赔率缩减适中，覆盖所有排列。建议用 <strong>mBox</strong> 覆盖 + 1张直注冲高赔率。`;
+  } else {
+    recColor = 'var(--blue)';
+    recText = `排列数 <strong>${n}</strong>（最大24），mBox 赔率缩减 ${n} 倍。期望值与直注相同，但直注赔率更高。建议 <strong>直注</strong>，指定最看好的排列。`;
+  }
+
+  const permHtml = perms.map(p => `<span class="perm-tag">${p}</span>`).join('');
+
+  document.getElementById('t1-results').innerHTML = `
+    <div class="card">
+      <div class="card-title">排列分析</div>
+      <div class="stat-grid">
+        <div class="stat-box">
+          <div class="stat-val">${n}</div>
+          <div class="stat-lbl">唯一排列数</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">${(n/10000*100).toFixed(4)}%</div>
+          <div class="stat-lbl">mBox 中奖概率</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">${fmtRM(mboxBigOdds).replace('RM ','')}</div>
+          <div class="stat-lbl">mBox Big 一等奖(RM)</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">${fmtRM(mboxSmallOdds).replace('RM ','')}</div>
+          <div class="stat-lbl">mBox Small 一等奖(RM)</div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px">
+        号码模式：<span style="color:var(--gold);font-weight:600">${pattern}</span>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px">所有唯一排列（${n}个）：</div>
+        <div class="perm-grid">${permHtml}</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">直注 vs mBox 对比（每RM1投注）</div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>投注方式</th>
+              <th>成本</th>
+              <th>一等奖概率</th>
+              <th>一等奖赔率</th>
+              <th>理论期望值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge badge-blue">直注 Big</span></td>
+              <td>RM 1.00</td>
+              <td>${fmtProb(1, 10000)}</td>
+              <td><span style="color:var(--gold)">RM 2,500</span></td>
+              <td class="ev-negative">${fmtRM(evBig)}</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-gold">直注 Small</span></td>
+              <td>RM 1.00</td>
+              <td>${fmtProb(1, 10000)}</td>
+              <td><span style="color:var(--gold)">RM 3,500</span></td>
+              <td class="ev-negative">${fmtRM(evSmall)}</td>
+            </tr>
+            <tr class="highlight-row">
+              <td><span class="badge badge-green">mBox Big</span></td>
+              <td>RM 1.00</td>
+              <td>${fmtProb(n, 10000)}</td>
+              <td><span style="color:var(--gold)">${fmtRM(mboxBigOdds)}</span></td>
+              <td class="ev-negative">${fmtRM(evBig)}</td>
+            </tr>
+            <tr class="highlight-row">
+              <td><span class="badge badge-green">mBox Small</span></td>
+              <td>RM 1.00</td>
+              <td>${fmtProb(n, 10000)}</td>
+              <td><span style="color:var(--gold)">${fmtRM(mboxSmallOdds)}</span></td>
+              <td class="ev-negative">${fmtRM(evSmall)}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note" style="margin-top:10px">* 期望值基于完整奖金结构计算（Big含Special/Consolation），理论上所有方式EV相同。实际以官方公布为准。</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">投注建议</div>
+      <div class="conclusion-box">
+        ${recText}
+        <hr class="divider">
+        <strong>完整奖金结构（Magnum 4D，每RM1）：</strong><br>
+        Big：一等 RM2,500 | 二等 RM1,000 | 三等 RM500 | Special×10 RM18 | Consolation×10 RM6<br>
+        Small：一等 RM3,500 | 二等 RM2,000 | 三等 RM1,000（无Special/Consolation）<br>
+        Big EV = (2500+1000+500+1800+600)/10000 = <strong>RM0.64</strong>
+        | Small EV = (3500+2000+1000)/10000 = <strong>RM0.65</strong>
+      </div>
+    </div>
+  `;
+}
+
+// ===================== TAB 2 =====================
+
+let t2Pref = 'big';
+
+function updateBudgetLabel() {
+  const v = document.getElementById('t2-budget').value;
+  document.getElementById('t2-budget-lbl').textContent = 'RM' + v;
+}
+
+function selectPref(el, val) {
+  document.querySelectorAll('#t2-pref .radio-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  t2Pref = val;
+  optimizeBudget();
+}
+
+function randomNum() {
+  // Generate a random 4-digit number with some variety
+  const templates = [
+    () => { const d = Math.floor(Math.random()*9)+1; return String(d)+String(d)+String(Math.floor(Math.random()*10))+String(Math.floor(Math.random()*10)); },
+    () => { const d = Math.floor(Math.random()*9)+1; return String(d)+String(d)+String(d)+String(Math.floor(Math.random()*10)); },
+    () => { const a = Math.floor(Math.random()*10); return String(a)+String(a)+String(a)+String(a); },
+    () => [0,1,2,3].map(()=>Math.floor(Math.random()*10)).join('')
+  ];
+  const fn = templates[Math.floor(Math.random()*templates.length)];
+  return fn();
+}
+
+function optimizeBudget() {
+  const budget = parseInt(document.getElementById('t2-budget').value);
+  const inputs = ['t2-n1','t2-n2','t2-n3','t2-n4','t2-n5'].map(id => {
+    const v = document.getElementById(id).value.replace(/[^0-9]/g,'');
+    return v.length === 4 ? v : null;
+  });
+
+  // Fill empty with random
+  const nums = inputs.map(n => n || randomNum());
+
+  // Analyze each
+  const analyzed = nums.map(num => {
+    const digits = num.split('');
+    const n = countPermutations(digits);
+    const oddsLoss = (n - 1) / n; // 0 = no loss (n=1), close to 1 = bad
+    // For mBox: makes sense if n <= 6 (loss < 83%)
+    const useMBox = n <= 6;
+    return { num, n, oddsLoss, useMBox };
+  });
+
+  // Sort by efficiency (low oddsLoss = better for mBox = prioritize)
+  const sorted = [...analyzed].sort((a,b) => a.oddsLoss - b.oddsLoss);
+
+  // Allocate budget
+  const perBet = 1; // RM1 per bet unit
+  let remaining = budget;
+  const plan = [];
+
+  for (const item of sorted) {
+    if (remaining <= 0) break;
+    const method = item.useMBox ? 'mBox' : '直注';
+    const betType = t2Pref === 'half'
+      ? (plan.length % 2 === 0 ? 'Big' : 'Small')
+      : (t2Pref === 'big' ? 'Big' : 'Small');
+    const amount = Math.min(perBet, remaining);
+    const odds1st = betType === 'Big' ? 2500 : 3500;
+    const actualOdds = item.useMBox ? Math.round(odds1st / item.n * 100) / 100 : odds1st;
+    plan.push({
+      num: item.num,
+      method,
+      betType,
+      amount,
+      coverage: item.useMBox ? item.n : 1,
+      n: item.n,
+      actualOdds
+    });
+    remaining -= amount;
+  }
+
+  // If remaining budget, add more bets on first items
+  let idx = 0;
+  while (remaining > 0 && plan.length > 0) {
+    const extra = Math.min(perBet, remaining);
+    plan[idx % plan.length].amount += extra;
+    remaining -= extra;
+    idx++;
+  }
+
+  // Stats
+  const totalCost = plan.reduce((a,b)=>a+b.amount, 0);
+  const totalCoverage = plan.reduce((a,b)=>a+b.coverage, 0);
+  const totalProb = totalCoverage / 10000;
+
+  // Weighted EV
+  const evBig = 0.64, evSmall = 0.65;
+  const totalEV = plan.reduce((acc, p) => {
+    const ev = p.betType === 'Big' ? evBig : evSmall;
+    return acc + p.amount * ev;
+  }, 0);
+
+  const rows = plan.map((p,i) => `
+    <tr>
+      <td style="font-family:'Courier New',monospace;color:var(--blue);font-size:15px">${p.num}</td>
+      <td><span class="badge ${p.method === 'mBox' ? 'badge-green' : 'badge-blue'}">${p.method}</span></td>
+      <td><span class="badge badge-gold">${p.betType}</span></td>
+      <td style="color:var(--gold)">RM ${p.amount.toFixed(2)}</td>
+      <td>${p.coverage} 个 <span style="color:var(--text-muted);font-size:11px">(/${p.n})</span></td>
+      <td style="color:var(--gold)">${fmtRM(p.actualOdds)}</td>
+    </tr>
+  `).join('');
+
+  document.getElementById('t2-results').innerHTML = `
+    <div class="card">
+      <div class="card-title">最优投注方案</div>
+      <div class="stat-grid">
+        <div class="stat-box">
+          <div class="stat-val">${fmtRM(totalCost).replace('RM ','RM')}</div>
+          <div class="stat-lbl">总成本</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">${totalCoverage.toLocaleString()}</div>
+          <div class="stat-lbl">覆盖号码数</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">${(totalProb*100).toFixed(4)}%</div>
+          <div class="stat-lbl">综合中奖率</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">${fmtRM(totalEV).replace('RM ','RM')}</div>
+          <div class="stat-lbl">综合期望值</div>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>号码</th>
+              <th>方式</th>
+              <th>类型</th>
+              <th>金额</th>
+              <th>覆盖排列</th>
+              <th>一等奖赔率</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+      <p class="note" style="margin-top:10px">* 排列数 ≤ 6 自动选mBox（赔率损失率 ≤ 83%），其余用直注保留最高赔率</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">覆盖概率可视化</div>
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px">
+        总覆盖 ${totalCoverage} / 10,000 个可能号码
+      </div>
+      <div class="prob-bar-wrap" style="height:12px">
+        <div class="prob-bar" style="width:${Math.min(totalProb*100*20,100)}%"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-top:4px">
+        <span>0</span><span>500</span><span>1000</span><span>2500</span><span>5000</span><span>10000</span>
+      </div>
+    </div>
+  `;
+}
+
+// ===================== TAB 3 =====================
+
+function updateSplitLabel() {
+  document.getElementById('t3-split-lbl').textContent = document.getElementById('t3-split').value;
+}
+
+function calcJackpot() {
+  const pool = parseFloat(document.getElementById('t3-pool').value) || 0;
+  const split = parseInt(document.getElementById('t3-split').value) || 1;
+  const price = parseFloat(document.getElementById('t3-price').value) || 2;
+
+  // Simplified Jackpot probability: ~1/500,000
+  const prob = 1 / 500000;
+
+  const ev = (pool / split) * prob - price;
+  const breakeven = price * split / prob; // pool needed for EV=0
+
+  const evColor = ev >= 0 ? 'var(--green)' : 'var(--red)';
+  const evSign = ev >= 0 ? '+' : '';
+
+  document.getElementById('t3-results').innerHTML = `
+    <div class="card">
+      <div class="card-title">当前期望值分析</div>
+      <div class="stat-grid">
+        <div class="stat-box">
+          <div class="stat-val" style="color:${evColor};font-size:18px">${evSign}${fmtRM(ev).replace('RM ','RM')}</div>
+          <div class="stat-lbl">每张票期望值</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" style="font-size:16px">${fmtRM(breakeven)}</div>
+          <div class="stat-lbl">EV 转正所需奖池</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">1/500,000</div>
+          <div class="stat-lbl">中奖概率（估算）</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">${split}人</div>
+          <div class="stat-lbl">预计平分</div>
+        </div>
+      </div>
+      <div class="conclusion-box">
+        当前奖池 <strong>${fmtRM(pool)}</strong>，平分后实得 <strong>${fmtRM(pool/split)}</strong><br>
+        EV = (${fmtRM(pool/split)} × 1/500,000) − ${fmtRM(price)} = <strong style="color:${evColor}">${evSign}${fmtRM(ev)}</strong><br>
+        ${ev >= 0
+          ? `<span style="color:var(--green)">当前奖池已达数学正期望！理论上值得购买。</span>`
+          : `<span style="color:var(--text-muted)">奖池需达到 <strong style="color:var(--gold)">${fmtRM(breakeven)}</strong> 时 EV 才转正。</span>`
+        }<br>
+        <span style="font-size:11px;color:var(--text-muted)">概率基于 Magnum 4D Jackpot 简化模型（1/500,000），实际概率以官方规则为准</span>
+      </div>
+    </div>
+  `;
+
+  drawJackpotChart(split, price);
+}
+
+function drawJackpotChart(split, price) {
+  const canvas = document.getElementById('jackpot-canvas');
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.parentElement.clientWidth - 36;
+  const H = 220;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  const pad = { top: 20, right: 20, bottom: 40, left: 65 };
+  const cW = W - pad.left - pad.right;
+  const cH = H - pad.top - pad.bottom;
+
+  const prob = 1 / 500000;
+  const maxPool = 30000000;
+  const steps = 200;
+  const points = [];
+  for (let i = 0; i <= steps; i++) {
+    const pool = (i / steps) * maxPool;
+    const ev = (pool / split) * prob - price;
+    points.push({ pool, ev });
+  }
+
+  const evMax = Math.max(...points.map(p=>p.ev));
+  const evMin = Math.min(...points.map(p=>p.ev));
+  const evRange = evMax - evMin || 1;
+
+  function toX(pool) { return pad.left + (pool / maxPool) * cW; }
+  function toY(ev) { return pad.top + (1 - (ev - evMin) / evRange) * cH; }
+
+  // Background
+  ctx.fillStyle = '#0f1923';
+  ctx.fillRect(0, 0, W, H);
+
+  // Zero line
+  const zeroY = toY(0);
+  ctx.strokeStyle = 'rgba(255,107,107,0.4)';
+  ctx.setLineDash([5,5]);
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(pad.left, zeroY);
+  ctx.lineTo(W - pad.right, zeroY);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Grid lines
+  ctx.strokeStyle = 'rgba(42,63,90,0.6)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 6; i++) {
+    const x = pad.left + (i / 6) * cW;
+    ctx.beginPath();
+    ctx.moveTo(x, pad.top);
+    ctx.lineTo(x, H - pad.bottom);
+    ctx.stroke();
+    const label = (i / 6 * 3000).toFixed(0) + '万';
+    ctx.fillStyle = '#8aa0b8';
+    ctx.font = `10px 'Segoe UI', sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText(label, x, H - pad.bottom + 14);
+  }
+
+  // EV curve gradient
+  const grad = ctx.createLinearGradient(0, pad.top, 0, H - pad.bottom);
+  grad.addColorStop(0, 'rgba(56,217,169,0.8)');
+  grad.addColorStop(0.5, 'rgba(77,171,247,0.6)');
+  grad.addColorStop(1, 'rgba(255,107,107,0.6)');
+
+  // Fill under curve
+  ctx.beginPath();
+  ctx.moveTo(toX(points[0].pool), toY(points[0].ev));
+  for (let i = 1; i < points.length; i++) {
+    ctx.lineTo(toX(points[i].pool), toY(points[i].ev));
+  }
+  ctx.lineTo(toX(maxPool), H - pad.bottom);
+  ctx.lineTo(toX(0), H - pad.bottom);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(77,171,247,0.08)';
+  ctx.fill();
+
+  // Main line
+  ctx.beginPath();
+  ctx.moveTo(toX(points[0].pool), toY(points[0].ev));
+  for (let i = 1; i < points.length; i++) {
+    ctx.lineTo(toX(points[i].pool), toY(points[i].ev));
+  }
+  ctx.strokeStyle = '#4dabf7';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Breakeven point marker
+  const breakevenPool = price * split / prob;
+  if (breakevenPool <= maxPool) {
+    const bx = toX(breakevenPool);
+    const by = toY(0);
+    ctx.beginPath();
+    ctx.arc(bx, by, 5, 0, Math.PI * 2);
+    ctx.fillStyle = '#f0b429';
+    ctx.fill();
+    ctx.strokeStyle = '#0f1923';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.fillStyle = '#f0b429';
+    ctx.font = `bold 10px 'Segoe UI', sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText('EV=0', bx, by - 10);
+  }
+
+  // Current pool dot
+  const curPool = parseFloat(document.getElementById('t3-pool').value) || 0;
+  if (curPool >= 0 && curPool <= maxPool) {
+    const curEV = (curPool / split) * prob - price;
+    const cx2 = toX(curPool);
+    const cy2 = toY(curEV);
+    ctx.beginPath();
+    ctx.arc(cx2, cy2, 5, 0, Math.PI * 2);
+    ctx.fillStyle = curEV >= 0 ? '#38d9a9' : '#ff6b6b';
+    ctx.fill();
+    ctx.strokeStyle = '#0f1923';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+
+  // Y axis labels
+  ctx.fillStyle = '#8aa0b8';
+  ctx.font = `10px 'Segoe UI', sans-serif`;
+  ctx.textAlign = 'right';
+  const evLabels = [evMin, evMin + evRange*0.25, evMin + evRange*0.5, evMin + evRange*0.75, evMax];
+  for (const ev of evLabels) {
+    const y = toY(ev);
+    ctx.fillText((ev >= 0 ? '+' : '') + ev.toFixed(1), pad.left - 6, y + 4);
+  }
+
+  // Axis labels
+  ctx.fillStyle = '#8aa0b8';
+  ctx.font = `10px 'Segoe UI', sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillText('奖池金额 (万RM)', W / 2, H - 4);
+
+  ctx.save();
+  ctx.translate(12, H / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText('期望值 EV (RM)', 0, 0);
+  ctx.restore();
+
+  // Zero label
+  ctx.fillStyle = '#ff6b6b';
+  ctx.textAlign = 'right';
+  ctx.font = `9px 'Segoe UI', sans-serif`;
+  ctx.fillText('EV=0', pad.left - 2, zeroY + 3);
+}
+
+// ===================== TAB 4 =====================
+
+let t4Style = 0;
+
+function selectStyle(idx) {
+  t4Style = idx;
+  [0,1,2].forEach(i => {
+    document.getElementById('style-'+i).classList.toggle('selected', i===idx);
+  });
+}
+
+function generateRM10() {
+  const styles = [
+    {
+      name: '稳健型',
+      desc: '最大化覆盖号码数 — 5个mBox各RM2，选含重复数字的号码',
+      nums: ['1123','2234','5566','7778','8899'],
+      bets: [
+        { num:'1123', method:'mBox', type:'Big', amount:2 },
+        { num:'2234', method:'mBox', type:'Big', amount:2 },
+        { num:'5566', method:'mBox', type:'Big', amount:2 },
+        { num:'7778', method:'mBox', type:'Big', amount:2 },
+        { num:'8899', method:'mBox', type:'Big', amount:2 },
+      ]
+    },
+    {
+      name: '冲刺型',
+      desc: '追求最高赔率 — 2张直注Small RM2 + 1张Roll RM6（Roll覆盖所有末位）',
+      nums: genRandom3(),
+      bets: []
+    },
+    {
+      name: '均衡型（推荐）',
+      desc: '覆盖与赔率兼顾 — 3张直注Big RM1 + 2个mBox RM1 + 1个Roll RM4',
+      nums: genMixed(),
+      bets: []
+    }
+  ];
+
+  // Build bets for style 1 & 2
+  const s1nums = genRandom3();
+  styles[1].nums = s1nums;
+  styles[1].bets = [
+    { num: s1nums[0], method:'直注', type:'Small', amount:2 },
+    { num: s1nums[1], method:'直注', type:'Small', amount:2 },
+    { num: s1nums[2].slice(0,3)+'X', method:'Roll', type:'Small', amount:6, note:'末位Roll' },
+  ];
+
+  const s2data = genMixed();
+  styles[2].nums = s2data.nums;
+  styles[2].bets = [
+    { num: s2data.direct[0], method:'直注', type:'Big', amount:1 },
+    { num: s2data.direct[1], method:'直注', type:'Big', amount:1 },
+    { num: s2data.direct[2], method:'直注', type:'Big', amount:1 },
+    { num: s2data.mbox[0], method:'mBox', type:'Big', amount:1 },
+    { num: s2data.mbox[1], method:'mBox', type:'Big', amount:1 },
+    { num: s2data.direct[0].slice(0,3)+'X', method:'Roll', type:'Big', amount:4, note:'首号Roll末位' },
+  ];
+
+  const s = styles[t4Style];
+
+  // Calculate stats
+  let totalCov = 0, totalCost = 0;
+  const evBig = 0.64, evSmall = 0.65;
+  let totalEV = 0;
+
+  const rows = s.bets.map(b => {
+    const numClean = b.num.replace('X','0');
+    const digits = numClean.split('');
+    let coverage = 1;
+    let odds1st = 0;
+
+    if (b.method === 'Roll') {
+      coverage = 10; // Roll covers 10 permutations for last digit
+      odds1st = b.type === 'Small' ? 350 : 250;
+    } else if (b.method === 'mBox') {
+      coverage = countPermutations(digits);
+      odds1st = Math.round((b.type === 'Small' ? 3500 : 2500) / coverage * 100) / 100;
+    } else {
+      coverage = 1;
+      odds1st = b.type === 'Small' ? 3500 : 2500;
+    }
+
+    totalCov += coverage;
+    totalCost += b.amount;
+    const ev = b.amount * (b.type === 'Small' ? evSmall : evBig);
+    totalEV += ev;
+
+    const methodBadge = b.method === 'mBox' ? 'badge-green' : b.method === 'Roll' ? 'badge-gold' : 'badge-blue';
+
+    return `
+      <tr>
+        <td style="font-family:'Courier New',monospace;color:var(--blue);font-size:15px">${b.num}${b.note?'<span style="font-size:10px;color:var(--text-muted)"> '+b.note+'</span>':''}</td>
+        <td><span class="badge ${methodBadge}">${b.method}</span></td>
+        <td><span class="badge badge-gold">${b.type}</span></td>
+        <td style="color:var(--gold)">RM ${b.amount.toFixed(2)}</td>
+        <td>${coverage} 个</td>
+        <td style="color:var(--gold)">${fmtRM(odds1st)}</td>
+      </tr>
+    `;
+  }).join('');
+
+  document.getElementById('t4-results').innerHTML = `
+    <div class="card">
+      <div class="card-title">${s.name} — 投注清单</div>
+      <p class="section-subtitle" style="margin-bottom:12px">${s.desc}</p>
+      <div class="stat-grid">
+        <div class="stat-box">
+          <div class="stat-val">${fmtRM(totalCost)}</div>
+          <div class="stat-lbl">总成本</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">${totalCov}</div>
+          <div class="stat-lbl">覆盖号码数</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">${(totalCov/10000*100).toFixed(3)}%</div>
+          <div class="stat-lbl">综合中奖率</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">${fmtRM(totalEV)}</div>
+          <div class="stat-lbl">综合期望值</div>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>号码</th>
+              <th>方式</th>
+              <th>类型</th>
+              <th>金额</th>
+              <th>覆盖</th>
+              <th>一等奖赔率</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">号码建议逻辑</div>
+      <div class="conclusion-box">
+        ${t4Style === 0
+          ? `<strong>稳健型</strong>：选含重复数字的号码（如 1123=12排列、5566=6排列），mBox赔率损失率低（1−1/12=92%损失 vs 全不同1−1/24=96%损失）。每RM2 mBox覆盖多个排列，中奖面最广。`
+          : t4Style === 1
+          ? `<strong>冲刺型</strong>：选全不同号码直注Small，保留最高赔率 RM3,500。Roll 则用 RM6 覆盖某号码的末位0−9，以低成本扩大末位覆盖。适合喜欢高赔率但仍想有一定覆盖面的玩家。`
+          : `<strong>均衡型</strong>：3张直注保留高赔率（RM2,500一等奖），2个mBox用重复号码扩大覆盖，Roll以小成本覆盖末位变体。整体兼顾数学覆盖率与中奖赔率，为推荐方案。`
+        }
+        <br><br>
+        <span style="font-size:11px;color:var(--text-muted)">
+          彩票期望值恒小于1（庄家恒有优势），以上为娱乐框架内的最优化策略，不改变数学本质。
+        </span>
+      </div>
+    </div>
+  `;
+}
+
+function genRandom3() {
+  const result = [];
+  const used = new Set();
+  while (result.length < 3) {
+    const digits = Array.from({length:4}, () => Math.floor(Math.random()*10));
+    // Ensure all different
+    if (new Set(digits).size === 4) {
+      const s = digits.join('');
+      if (!used.has(s)) { result.push(s); used.add(s); }
+    }
+  }
+  return result;
+}
+
+function genMixed() {
+  const directNums = [];
+  const mboxNums = [];
+  // Direct: all different
+  const d1 = genRandom3();
+  directNums.push(...d1);
+  // mBox: with repeats
+  const templates = ['1123','2244','5577','6688','9900','1133'];
+  for (let i = 0; i < 2; i++) {
+    mboxNums.push(templates[Math.floor(Math.random() * templates.length)]);
+  }
+  return { nums: [...directNums, ...mboxNums], direct: directNums, mbox: mboxNums };
+}
+
+// ===================== TAB SWITCHING =====================
+
+function switchTab(idx) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', i===idx));
+  document.querySelectorAll('.tab-panel').forEach((p,i) => p.classList.toggle('active', i===idx));
+  if (idx === 2) {
+    setTimeout(() => calcJackpot(), 50);
+  }
+}
+
+// ===================== INIT =====================
+
+window.addEventListener('load', () => {
+  updateBudgetLabel();
+  calcJackpot();
+  optimizeBudget();
+});
+
+window.addEventListener('resize', () => {
+  if (document.getElementById('panel-2').classList.contains('active')) {
+    const split = parseInt(document.getElementById('t3-split').value) || 1;
+    const price = parseFloat(document.getElementById('t3-price').value) || 2;
+    drawJackpotChart(split, price);
+  }
+});
+</script>
+</body>
+</html>
