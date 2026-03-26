@@ -546,6 +546,36 @@
 <!-- TAB 4: RM10 方案 -->
 <div class="tab-panel" id="panel-3">
   <div class="card">
+    <div class="card-title">选择购买渠道</div>
+    <div class="radio-group" id="t4-op-group">
+      <div class="radio-btn selected" onclick="selectOperator(this,'magnum')"
+        style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 8px">
+        <span style="font-size:18px">🟡</span>
+        <span style="font-size:12px;font-weight:700">Magnum</span>
+        <span style="font-size:10px;color:var(--text-muted)">万能万字</span>
+      </div>
+      <div class="radio-btn" onclick="selectOperator(this,'damacai')"
+        style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 8px">
+        <span style="font-size:18px">🔴</span>
+        <span style="font-size:12px;font-weight:700">Da Ma Cai</span>
+        <span style="font-size:10px;color:var(--text-muted)">大马彩 1+3D</span>
+      </div>
+      <div class="radio-btn" onclick="selectOperator(this,'toto')"
+        style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 8px">
+        <span style="font-size:18px">🔵</span>
+        <span style="font-size:12px;font-weight:700">Sports Toto</span>
+        <span style="font-size:10px;color:var(--text-muted)">体育彩票</span>
+      </div>
+      <div class="radio-btn" onclick="selectOperator(this,'all')"
+        style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 8px">
+        <span style="font-size:18px">🎯</span>
+        <span style="font-size:12px;font-weight:700">三家都买</span>
+        <span style="font-size:10px;color:var(--text-muted)">RM30 总预算</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
     <div class="card-title">选择投注风格</div>
     <div class="style-cards">
       <div class="style-card selected" id="style-0" onclick="selectStyle(0)">
@@ -565,7 +595,7 @@
   </div>
 
   <div id="t4-results">
-    <div class="result-placeholder"><span>🎯</span>选择风格后点击生成方案</div>
+    <div class="result-placeholder"><span>🎯</span>选择渠道和风格后点击生成方案</div>
   </div>
 </div>
 
@@ -1184,6 +1214,19 @@ function drawJackpotChart(split, price) {
 // ===================== TAB 4 =====================
 
 let t4Style = 0;
+let t4Operator = 'magnum';
+
+const OPERATORS = {
+  magnum:  { name:'万能 Magnum 4D',      icon:'🟡', color:'#f0b429', prize1Big:2500, prize1Small:3500, outlets:'Magnum 分行 / Magnum app', site:'magnum4d.my' },
+  damacai: { name:'大马彩 Da Ma Cai 1+3D',icon:'🔴', color:'#ff6b6b', prize1Big:2500, prize1Small:3500, outlets:'Da Ma Cai 分行 / DMC app', site:'damacai.com.my' },
+  toto:    { name:'体育彩票 Sports Toto', icon:'🔵', color:'#4dabf7', prize1Big:2500, prize1Small:3500, outlets:'Sports Toto 分行 / Toto app', site:'sportstoto.com.my' },
+};
+
+function selectOperator(el, val) {
+  document.querySelectorAll('#t4-op-group .radio-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  t4Operator = val;
+}
 
 function selectStyle(idx) {
   t4Style = idx;
@@ -1283,25 +1326,58 @@ function generateRM10() {
     `;
   }).join('');
 
+  // Build operator purchase card(s)
+  const opKeys = t4Operator === 'all' ? ['magnum','damacai','toto'] : [t4Operator];
+  const opCardsHtml = opKeys.map(key => {
+    const op = OPERATORS[key];
+    return `
+      <div style="background:#0f1923;border:1px solid ${op.color}40;border-left:3px solid ${op.color};
+        border-radius:6px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:24px">${op.icon}</span>
+          <div>
+            <div style="font-weight:700;color:${op.color};font-size:13px">${op.name}</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px">
+              购买渠道：${op.outlets}
+            </div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);text-align:right">
+          一等奖 Big <span style="color:${op.color};font-weight:600">RM2,500</span><br>
+          一等奖 Small <span style="color:${op.color};font-weight:600">RM3,500</span>
+        </div>
+      </div>`;
+  }).join('');
+
+  const totalOpCost = totalCost * opKeys.length;
+
   document.getElementById('t4-results').innerHTML = `
+    <div class="card">
+      <div class="card-title">购买渠道</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${opCardsHtml}
+      </div>
+      ${t4Operator === 'all' ? `<p class="note" style="margin-top:10px">三家各买一套，总花费 <strong style="color:var(--gold)">${fmtRM(totalOpCost)}</strong>，覆盖三家独立开奖，可分散风险。</p>` : ''}
+    </div>
+
     <div class="card">
       <div class="card-title">${s.name} — 投注清单</div>
       <p class="section-subtitle" style="margin-bottom:12px">${s.desc}</p>
       <div class="stat-grid">
         <div class="stat-box">
-          <div class="stat-val">${fmtRM(totalCost)}</div>
-          <div class="stat-lbl">总成本</div>
+          <div class="stat-val">${fmtRM(t4Operator === 'all' ? totalOpCost : totalCost)}</div>
+          <div class="stat-lbl">总花费</div>
         </div>
         <div class="stat-box">
-          <div class="stat-val">${totalCov}</div>
+          <div class="stat-val">${totalCov}${t4Operator === 'all' ? ' ×3' : ''}</div>
           <div class="stat-lbl">覆盖号码数</div>
         </div>
         <div class="stat-box">
           <div class="stat-val">${(totalCov/10000*100).toFixed(3)}%</div>
-          <div class="stat-lbl">综合中奖率</div>
+          <div class="stat-lbl">单家中奖率</div>
         </div>
         <div class="stat-box">
-          <div class="stat-val">${fmtRM(totalEV)}</div>
+          <div class="stat-val">${fmtRM(t4Operator === 'all' ? totalEV * 3 : totalEV)}</div>
           <div class="stat-lbl">综合期望值</div>
         </div>
       </div>
@@ -1312,7 +1388,7 @@ function generateRM10() {
               <th>号码</th>
               <th>方式</th>
               <th>类型</th>
-              <th>金额</th>
+              <th>金额/家</th>
               <th>覆盖</th>
               <th>一等奖赔率</th>
             </tr>
@@ -1320,20 +1396,24 @@ function generateRM10() {
           <tbody>${rows}</tbody>
         </table>
       </div>
+      <p class="note" style="margin-top:8px">* 以上号码${t4Operator === 'all' ? '每家各买一套' : `在 ${OPERATORS[t4Operator]?.name || ''} 购买`}</p>
     </div>
 
     <div class="card">
       <div class="card-title">号码建议逻辑</div>
       <div class="conclusion-box">
         ${t4Style === 0
-          ? `<strong>稳健型</strong>：选含重复数字的号码（如 1123=12排列、5566=6排列），mBox赔率损失率低（1−1/12=92%损失 vs 全不同1−1/24=96%损失）。每RM2 mBox覆盖多个排列，中奖面最广。`
+          ? `<strong>稳健型</strong>：选含重复数字的号码（如 1123=12排列、5566=6排列），mBox赔率损失率低。每RM2 mBox覆盖多个排列，中奖面最广。`
           : t4Style === 1
-          ? `<strong>冲刺型</strong>：选全不同号码直注Small，保留最高赔率 RM3,500。Roll 则用 RM6 覆盖某号码的末位0−9，以低成本扩大末位覆盖。适合喜欢高赔率但仍想有一定覆盖面的玩家。`
-          : `<strong>均衡型</strong>：3张直注保留高赔率（RM2,500一等奖），2个mBox用重复号码扩大覆盖，Roll以小成本覆盖末位变体。整体兼顾数学覆盖率与中奖赔率，为推荐方案。`
+          ? `<strong>冲刺型</strong>：选全不同号码直注Small，保留最高赔率 RM3,500。Roll 用 RM6 覆盖末位0−9，以低成本扩大覆盖面。`
+          : `<strong>均衡型</strong>：3张直注保留高赔率（RM2,500），2个mBox扩大覆盖，Roll覆盖末位变体。兼顾覆盖率与赔率，为推荐方案。`
         }
-        <br><br>
+        <hr class="divider">
+        <strong>三家奖金结构相同（标准4D）：</strong><br>
+        Big：一等 RM2,500 | 二等 RM1,000 | 三等 RM500 | Special RM180（×10）| Consolation RM60（×10）<br>
+        Small：一等 RM3,500 | 二等 RM2,000 | 三等 RM1,000（无Special/Consolation）<br>
         <span style="font-size:11px;color:var(--text-muted)">
-          彩票期望值恒小于1（庄家恒有优势），以上为娱乐框架内的最优化策略，不改变数学本质。
+          彩票期望值恒小于1，以上为娱乐框架内的最优化策略，不改变数学本质。
         </span>
       </div>
     </div>
