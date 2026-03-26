@@ -682,7 +682,7 @@
 
 <header>
   <h1>4D 彩票数学分析工具</h1>
-  <p>Malaysia 4D · 数学教育与娱乐参考 · Magnum 4D 奖金结构</p>
+  <p>Malaysia 4D · 数学教育与娱乐参考 · Magnum / Da Ma Cai / Sports Toto</p>
 </header>
 
 <div class="tabs-wrapper">
@@ -1422,14 +1422,11 @@ function getT2Nums() {
     const v = document.getElementById(id).value.replace(/[^0-9]/g,'');
     return v.length === 4 ? v : null;
   });
-  const hasAnyInput = inputs.some(v => v !== null);
-  // Only regenerate cache if no user inputs at all
-  if (!hasAnyInput && !t2CachedRands) {
+  // Generate cache once; only cleared by the 🔀 refresh button
+  if (!t2CachedRands) {
     t2CachedRands = Array.from({length: 5}, randomNum);
-  } else if (hasAnyInput) {
-    t2CachedRands = null; // Reset cache when user starts typing
   }
-  return inputs.map((v, i) => v || (t2CachedRands ? t2CachedRands[i] : randomNum()));
+  return inputs.map((v, i) => v || t2CachedRands[i]);
 }
 
 function updateBudgetLabel() {
@@ -1839,13 +1836,13 @@ function generateRM10() {
     {
       name: '冲刺型',
       desc: '追求最高赔率 — 2张直注Small RM2 + 1张Roll RM6（Roll覆盖所有末位）',
-      nums: genRandom3(),
+      nums: [],
       bets: []
     },
     {
       name: '均衡型（推荐）',
       desc: '覆盖与赔率兼顾 — 3张直注Big RM1 + 2个mBox RM1 + 1个Roll RM4',
-      nums: genMixed(),
+      nums: [],
       bets: []
     }
   ];
@@ -1856,7 +1853,7 @@ function generateRM10() {
   styles[1].bets = [
     { num: s1nums[0], method:'直注', type:'Small', amount:2 },
     { num: s1nums[1], method:'直注', type:'Small', amount:2 },
-    { num: s1nums[2].slice(0,3)+'X', method:'Roll', type:'Small', amount:6, note:'末位Roll' },
+    { num: s1nums[2].slice(0,3)+'R', method:'Roll', type:'Small', amount:6, note:'末位Roll' },
   ];
 
   const s2data = genMixed();
@@ -1867,7 +1864,7 @@ function generateRM10() {
     { num: s2data.direct[2], method:'直注', type:'Big', amount:1 },
     { num: s2data.mbox[0], method:'mBox', type:'Big', amount:1 },
     { num: s2data.mbox[1], method:'mBox', type:'Big', amount:1 },
-    { num: s2data.direct[0].slice(0,3)+'X', method:'Roll', type:'Big', amount:4, note:'首号Roll末位' },
+    { num: s2data.direct[0].slice(0,3)+'R', method:'Roll', type:'Big', amount:4, note:'首号Roll末位' },
   ];
 
   const s = styles[t4Style];
@@ -2237,7 +2234,6 @@ function toggleAccordion(idx) {
 
 window.addEventListener('load', () => {
   updateBudgetLabel();
-  calcJackpot();
   optimizeBudget();
 });
 
