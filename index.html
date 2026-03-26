@@ -692,6 +692,7 @@
   <button class="tab-btn" onclick="switchTab(3)">RM10 方案</button>
   <button class="tab-btn" onclick="switchTab(4)">📡 开奖结果</button>
   <button class="tab-btn" onclick="switchTab(5)">📖 玩法指南</button>
+  <button class="tab-btn" onclick="switchTab(6)">💰 自定义方案</button>
 </div>
 
 <!-- TAB 1: 号码分析器 -->
@@ -1210,6 +1211,88 @@ EV = 奖池 × (1/500,000) − RM2<br>
         理性投注，量力而为。
       </div>
     </div>
+  </div>
+
+</div>
+
+<!-- TAB 7: 自定义方案 -->
+<div class="tab-panel" id="panel-6">
+
+  <div class="card">
+    <div class="card-title">投注预算</div>
+
+    <!-- 预算输入 -->
+    <div style="margin-bottom:14px">
+      <label>自定义金额（RM）</label>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
+        <input type="number" id="t6-budget" value="20" min="1" max="9999" step="1"
+          style="width:140px;letter-spacing:1px"
+          oninput="document.getElementById('t6-budget').value=Math.max(1,Math.floor(+this.value||1))">
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn btn-secondary" style="width:auto;margin:0;padding:5px 12px;font-size:12px" onclick="setT6Budget(5)">RM5</button>
+          <button class="btn btn-secondary" style="width:auto;margin:0;padding:5px 12px;font-size:12px" onclick="setT6Budget(10)">RM10</button>
+          <button class="btn btn-secondary" style="width:auto;margin:0;padding:5px 12px;font-size:12px" onclick="setT6Budget(20)">RM20</button>
+          <button class="btn btn-secondary" style="width:auto;margin:0;padding:5px 12px;font-size:12px" onclick="setT6Budget(50)">RM50</button>
+          <button class="btn btn-secondary" style="width:auto;margin:0;padding:5px 12px;font-size:12px" onclick="setT6Budget(100)">RM100</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 运营商选择 -->
+    <div style="margin-bottom:14px">
+      <label>购买渠道</label>
+      <div class="radio-group" id="t6-op-group">
+        <div class="radio-btn selected" onclick="selectT6Operator(this,'magnum')"
+          style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 8px">
+          <span style="font-size:18px">🟡</span>
+          <span style="font-size:12px;font-weight:700">Magnum</span>
+          <span style="font-size:10px;color:var(--text-muted)">万能万字</span>
+        </div>
+        <div class="radio-btn" onclick="selectT6Operator(this,'damacai')"
+          style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 8px">
+          <span style="font-size:18px">🔴</span>
+          <span style="font-size:12px;font-weight:700">Da Ma Cai</span>
+          <span style="font-size:10px;color:var(--text-muted)">大马彩 1+3D</span>
+        </div>
+        <div class="radio-btn" onclick="selectT6Operator(this,'toto')"
+          style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 8px">
+          <span style="font-size:18px">🔵</span>
+          <span style="font-size:12px;font-weight:700">Sports Toto</span>
+          <span style="font-size:10px;color:var(--text-muted)">体育彩票</span>
+        </div>
+        <div class="radio-btn" onclick="selectT6Operator(this,'all')"
+          style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 8px">
+          <span style="font-size:18px">🎯</span>
+          <span style="font-size:12px;font-weight:700">三家都买</span>
+          <span style="font-size:10px;color:var(--text-muted)" id="t6-all-label">×3倍</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 风格选择 -->
+    <div style="margin-bottom:14px">
+      <label>投注风格</label>
+      <div class="style-cards">
+        <div class="style-card selected" id="t6-style-0" onclick="selectT6Style(0)">
+          <h3>稳健型</h3>
+          <p>最大化覆盖<br>全用 mBox 含重复数字<br>均摊预算到多个号码</p>
+        </div>
+        <div class="style-card" id="t6-style-1" onclick="selectT6Style(1)">
+          <h3>冲刺型</h3>
+          <p>追求最高赔率<br>直注 Small + Roll<br>按预算动态配比</p>
+        </div>
+        <div class="style-card" id="t6-style-2" onclick="selectT6Style(2)">
+          <h3>均衡型（推荐）</h3>
+          <p>覆盖与赔率兼顾<br>直注 + mBox + Roll<br>30% / 20% / 50% 比例</p>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn" onclick="generateCustomPlan()">生成方案</button>
+  </div>
+
+  <div id="t6-results">
+    <div class="result-placeholder"><span>💰</span>输入预算并选择风格后点击生成方案</div>
   </div>
 
 </div>
@@ -2238,6 +2321,262 @@ window.addEventListener('load', () => {
   updateBudgetLabel();
   optimizeBudget();
 });
+
+// ===================== TAB 7: 自定义方案 =====================
+
+let t6Operator = 'magnum';
+let t6Style = 0;
+
+function setT6Budget(v) {
+  document.getElementById('t6-budget').value = v;
+  // Update "三家都买" label
+  document.getElementById('t6-all-label').textContent = '×3 = RM' + (v * 3);
+}
+
+function selectT6Operator(el, val) {
+  document.querySelectorAll('#t6-op-group .radio-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  t6Operator = val;
+}
+
+function selectT6Style(idx) {
+  t6Style = idx;
+  [0,1,2].forEach(i => {
+    document.getElementById('t6-style-' + i).classList.toggle('selected', i === idx);
+  });
+}
+
+// Generate N unique all-different 4D numbers
+function genRandomN(n) {
+  const result = [];
+  const used = new Set();
+  let attempts = 0;
+  while (result.length < n && attempts < 500) {
+    attempts++;
+    const digits = Array.from({length:4}, () => Math.floor(Math.random()*10));
+    if (new Set(digits).size === 4) {
+      const s = digits.join('');
+      if (!used.has(s)) { result.push(s); used.add(s); }
+    }
+  }
+  return result;
+}
+
+function buildStableBets(budget) {
+  // mBox with repeated-digit numbers, stakes spread evenly
+  const pool = ['1112','2223','3334','4445','5556','6667','7778','8889',
+                '1122','3344','5566','7788','9911','2244','3366'].slice()
+                .sort(() => Math.random() - 0.5);
+  const targetN = Math.min(10, Math.max(1, Math.ceil(budget / 2)));
+  const unitAmount = Math.floor(budget / targetN);
+  const rest = budget - unitAmount * targetN; // first `rest` bets get +1
+  return pool.slice(0, targetN).map((num, i) => ({
+    num,
+    method: 'mBox',
+    type: 'Big',
+    amount: unitAmount + (i < rest ? 1 : 0)
+  })).filter(b => b.amount > 0);
+}
+
+function buildSprintBets(budget) {
+  const directCount = budget <= 8 ? 1 : budget <= 15 ? 2 : 3;
+  const directEach = 2; // RM2 per direct bet
+  const directTotal = directCount * directEach;
+
+  if (directTotal >= budget) {
+    // Not enough for Roll; just direct bets with even split
+    const randoms = genRandomN(Math.min(directCount, budget));
+    const each = Math.floor(budget / randoms.length);
+    const rest = budget - each * randoms.length;
+    return randoms.map((num, i) => ({
+      num, method:'直注', type:'Small', amount: each + (i < rest ? 1 : 0)
+    })).filter(b => b.amount > 0);
+  }
+
+  const rollAmount = budget - directTotal;
+  const randoms = genRandomN(directCount);
+  const bets = randoms.map(num => ({ num, method:'直注', type:'Small', amount: directEach }));
+  bets.push({ num: randoms[0].slice(0,3)+'R', method:'Roll', type:'Small', amount: rollAmount, note:'末位Roll' });
+  return bets;
+}
+
+function buildBalancedBets(budget) {
+  if (budget <= 2) return buildStableBets(budget); // fallback: tiny budget
+  const directBudget = Math.max(1, Math.round(budget * 0.3));
+  const mboxBudget   = Math.max(1, Math.round(budget * 0.2));
+
+  const directCount = Math.min(3, Math.max(1, directBudget));
+  const mboxCount   = Math.min(2, Math.max(1, mboxBudget));
+
+  const directAmount = Math.max(1, Math.floor(directBudget / directCount));
+  const mboxAmount   = Math.max(1, Math.floor(mboxBudget   / mboxCount));
+
+  const rollAmount = budget - directCount * directAmount - mboxCount * mboxAmount;
+
+  const mixed = genMixed(); // reuse existing genMixed()
+  const bets = [];
+  for (let i = 0; i < directCount; i++) {
+    bets.push({ num: mixed.direct[i] || genRandomN(1)[0], method:'直注', type:'Big', amount: directAmount });
+  }
+  for (let i = 0; i < mboxCount; i++) {
+    bets.push({ num: mixed.mbox[i], method:'mBox', type:'Big', amount: mboxAmount });
+  }
+  if (rollAmount > 0) {
+    bets.push({ num: mixed.direct[0].slice(0,3)+'R', method:'Roll', type:'Big', amount: rollAmount, note:'首号Roll末位' });
+  }
+  return bets;
+}
+
+function generateCustomPlan() {
+  const rawBudget = parseFloat(document.getElementById('t6-budget').value);
+  const budget = Math.max(1, Math.floor(rawBudget || 1));
+  document.getElementById('t6-budget').value = budget;
+
+  // Update all-label
+  document.getElementById('t6-all-label').textContent = '×3 = RM' + (budget * 3);
+
+  let bets;
+  let styleInfo;
+  if (t6Style === 0) {
+    bets = buildStableBets(budget);
+    styleInfo = { name:'稳健型', desc:`最大化覆盖 — ${bets.length} 个 mBox，各 RM${bets[0]?.amount} 起，含重复数字号码` };
+  } else if (t6Style === 1) {
+    bets = buildSprintBets(budget);
+    const rollBet = bets.find(b => b.method === 'Roll');
+    const directBets = bets.filter(b => b.method !== 'Roll');
+    const rollDesc = rollBet ? ` + Roll RM${rollBet.amount}（末位0−9）` : '';
+    styleInfo = { name:'冲刺型', desc:`${directBets.length} 张直注 Small RM${directBets[0]?.amount || 1}${rollDesc}` };
+  } else {
+    bets = buildBalancedBets(budget);
+    const d = bets.filter(b=>b.method==='直注').length;
+    const m = bets.filter(b=>b.method==='mBox').length;
+    const r = bets.find(b=>b.method==='Roll');
+    const rDesc = r ? ` + Roll RM${r.amount}` : '';
+    styleInfo = { name:'均衡型（推荐）', desc:`${d} 张直注 Big + ${m} 个 mBox${rDesc}（30%/20%/50% 预算比例）` };
+  }
+
+  // Calculate stats (side-effectful loop same as Tab 4)
+  let totalCov = 0, totalCost = 0, totalEV = 0;
+  const evBig = 0.64, evSmall = 0.65;
+
+  const rows = bets.map(b => {
+    const numClean = b.num.replace(/[RX]/g, '0');
+    const digits = numClean.split('');
+    let coverage, odds1st;
+
+    if (b.method === 'Roll') {
+      coverage = 10;
+      const baseOdds = b.type === 'Small' ? 3500 : 2500;
+      odds1st = Math.round(baseOdds * (b.amount / 10) * 100) / 100;
+    } else if (b.method === 'mBox') {
+      coverage = countPermutations(digits);
+      odds1st = Math.round((b.type === 'Small' ? 3500 : 2500) / coverage * 100) / 100;
+    } else {
+      coverage = 1;
+      odds1st = b.type === 'Small' ? 3500 : 2500;
+    }
+
+    totalCov  += coverage;
+    totalCost += b.amount;
+    totalEV   += b.amount * (b.type === 'Small' ? evSmall : evBig);
+
+    const methodBadge = b.method === 'mBox' ? 'badge-green' : b.method === 'Roll' ? 'badge-gold' : 'badge-blue';
+    return `
+      <tr>
+        <td style="font-family:'Courier New',monospace;color:var(--blue);font-size:15px">${b.num}${b.note?`<span style="font-size:10px;color:var(--text-muted)"> ${b.note}</span>`:''}</td>
+        <td><span class="badge ${methodBadge}">${b.method}</span></td>
+        <td><span class="badge badge-gold">${b.type}</span></td>
+        <td style="color:var(--gold)">RM ${b.amount.toFixed(2)}</td>
+        <td>${coverage} 个</td>
+        <td style="color:var(--gold)">${fmtRM(odds1st)}</td>
+      </tr>`;
+  }).join('');
+
+  const opKeys  = t6Operator === 'all' ? ['magnum','damacai','toto'] : [t6Operator];
+  const totalOpCost = totalCost * opKeys.length;
+
+  const opCardsHtml = opKeys.map(key => {
+    const op = OPERATORS[key];
+    return `
+      <div style="background:#0f1923;border:1px solid ${op.color}40;border-left:3px solid ${op.color};
+        border-radius:6px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:24px">${op.icon}</span>
+          <div>
+            <div style="font-weight:700;color:${op.color};font-size:13px">${op.name}</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px">购买渠道：${op.outlets}</div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);text-align:right">
+          一等奖 Big <span style="color:${op.color};font-weight:600">RM2,500</span><br>
+          一等奖 Small <span style="color:${op.color};font-weight:600">RM3,500</span>
+        </div>
+      </div>`;
+  }).join('');
+
+  const netLoss = t6Operator === 'all' ? totalCost*3 - totalEV*3 : totalCost - totalEV;
+  const dispEV  = t6Operator === 'all' ? totalEV * 3 : totalEV;
+  const dispCost = t6Operator === 'all' ? totalOpCost : totalCost;
+
+  document.getElementById('t6-results').innerHTML = `
+    <div class="card">
+      <div class="card-title">购买渠道</div>
+      <div style="display:flex;flex-direction:column;gap:8px">${opCardsHtml}</div>
+      ${t6Operator === 'all' ? `<p class="note" style="margin-top:10px">三家各买一套，总花费 <strong style="color:var(--gold)">${fmtRM(totalOpCost)}</strong>，覆盖三家独立开奖。</p>` : ''}
+    </div>
+
+    <div class="card">
+      <div class="card-title">${styleInfo.name} — RM${budget} 投注清单</div>
+      <p class="section-subtitle" style="margin-bottom:12px">${styleInfo.desc}</p>
+      <div class="stat-grid">
+        <div class="stat-box">
+          <div class="stat-val">${fmtRM(dispCost)}</div>
+          <div class="stat-lbl">总花费</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">${totalCov}${t6Operator === 'all' ? ' ×3' : ''}</div>
+          <div class="stat-lbl">覆盖号码数</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">${(totalCov/10000*100).toFixed(3)}%</div>
+          <div class="stat-lbl">单家中奖率</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">${fmtRM(dispEV)}</div>
+          <div style="font-size:10px;color:var(--red);margin-top:2px">净亏 ${fmtRM(netLoss).replace('RM ','−RM')}</div>
+          <div class="stat-lbl">理论回报</div>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>号码</th><th>方式</th><th>类型</th><th>金额/家</th><th>覆盖</th><th>一等奖得款</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+      <p class="note" style="margin-top:8px">* 以上号码${t6Operator === 'all' ? '每家各买一套' : `在 ${OPERATORS[t6Operator]?.name || ''} 购买`}</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">覆盖概率可视化</div>
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px">
+        总覆盖 ${totalCov} / 10,000 个可能号码
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">
+        最大可能覆盖（预算全用mBox全不同号）= ${budget * 24} 个
+      </div>
+      <div class="prob-bar-wrap" style="height:12px">
+        <div class="prob-bar" style="width:${Math.min(totalCov / (budget * 24) * 100, 100).toFixed(1)}%"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-top:4px">
+        <span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%（最优）</span>
+      </div>
+    </div>
+  `;
+}
 
 window.addEventListener('resize', () => {
   if (document.getElementById('panel-2').classList.contains('active')) {
