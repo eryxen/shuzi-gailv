@@ -677,31 +677,77 @@
     line-height: 1.6;
   }
 
-  /* ===== TUTORIAL OVERLAY ===== */
-  .tutorial-overlay {
+  /* ===== TUTORIAL ===== */
+  .tut-backdrop {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.78);
-    z-index: 9999;
-    align-items: flex-end;
-    justify-content: center;
-    padding: 0 12px 24px 12px;
+    background: rgba(0,0,0,0.72);
+    z-index: 9998;
+    cursor: pointer;
   }
-  .tutorial-overlay.active { display: flex; }
+  .tut-backdrop.active { display: block; }
+
   .tutorial-card {
+    display: none;
+    position: fixed;
+    z-index: 9999;
     background: var(--card);
     border: 2px solid var(--gold);
     border-radius: 14px;
     padding: 22px 22px 18px 22px;
     max-width: 460px;
-    width: 100%;
-    box-shadow: 0 8px 40px rgba(240,180,41,0.25);
-    animation: tut-up 0.28s ease;
+    width: calc(100vw - 24px);
+    box-shadow: 0 8px 40px rgba(240,180,41,0.3);
   }
-  @keyframes tut-up {
-    from { transform: translateY(36px); opacity: 0; }
-    to   { transform: translateY(0);    opacity: 1; }
+  .tutorial-card.active {
+    display: block;
+    animation: tut-pop 0.22s ease;
+  }
+  @keyframes tut-pop {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Arrow pointing UP to the tab */
+  .tut-arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 13px solid transparent;
+    border-right: 13px solid transparent;
+    transform: translateX(-50%);
+    transition: left 0.18s ease;
+  }
+  .tut-arrow.up {
+    top: -13px;
+    border-bottom: 13px solid var(--gold);
+  }
+  .tut-arrow.up::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: -11px;
+    width: 0; height: 0;
+    border-left: 11px solid transparent;
+    border-right: 11px solid transparent;
+    border-bottom: 11px solid var(--card);
+  }
+  .tut-arrow.down {
+    bottom: -13px;
+    top: auto;
+    border-top: 13px solid var(--gold);
+  }
+  .tut-arrow.down::after {
+    content: '';
+    position: absolute;
+    bottom: 3px;
+    top: auto;
+    left: -11px;
+    width: 0; height: 0;
+    border-left: 11px solid transparent;
+    border-right: 11px solid transparent;
+    border-top: 11px solid var(--card);
   }
   .tut-badge {
     font-size: 11px;
@@ -1409,20 +1455,21 @@ EV = 奖池 × (1/500,000) − RM2<br>
   奖金结构参考 Magnum 4D 官方规则（实际以官方公布为准）· EV 计算基于理论期望，不代表实际回报
 </footer>
 
-<!-- Tutorial Overlay -->
-<div class="tutorial-overlay" id="tutorial-overlay" onclick="handleOverlayClick(event)">
-  <div class="tutorial-card" id="tutorial-card">
-    <div class="tut-badge" id="tut-badge">步骤 1 / 9</div>
-    <div class="tut-title" id="tut-title"></div>
-    <div class="tut-body" id="tut-body"></div>
-    <div class="tut-nav">
-      <button class="tut-skip" onclick="endTutorial()">跳过</button>
-      <div class="tut-dots" id="tut-dots"></div>
-      <button class="btn btn-secondary" id="tut-prev"
-        style="width:auto;margin:0;padding:7px 14px;font-size:12px" onclick="tutPrev()">← 上一步</button>
-      <button class="btn" id="tut-next"
-        style="width:auto;margin:0;padding:7px 16px;font-size:12px" onclick="tutNext()">下一步 →</button>
-    </div>
+<!-- Tutorial backdrop -->
+<div class="tut-backdrop" id="tut-backdrop" onclick="endTutorial()"></div>
+<!-- Tutorial card (positioned dynamically by JS) -->
+<div class="tutorial-card" id="tutorial-card">
+  <div class="tut-arrow" id="tut-arrow" style="display:none"></div>
+  <div class="tut-badge" id="tut-badge">步骤 1 / 9</div>
+  <div class="tut-title" id="tut-title"></div>
+  <div class="tut-body" id="tut-body"></div>
+  <div class="tut-nav">
+    <button class="tut-skip" onclick="endTutorial()">跳过</button>
+    <div class="tut-dots" id="tut-dots"></div>
+    <button class="btn btn-secondary" id="tut-prev"
+      style="width:auto;margin:0;padding:7px 14px;font-size:12px" onclick="tutPrev()">← 上一步</button>
+    <button class="btn" id="tut-next"
+      style="width:auto;margin:0;padding:7px 16px;font-size:12px" onclick="tutNext()">下一步 →</button>
   </div>
 </div>
 
@@ -2771,18 +2818,16 @@ let tutStep = 0;
 
 function startTutorial() {
   tutStep = 0;
-  document.getElementById('tutorial-overlay').classList.add('active');
+  document.getElementById('tut-backdrop').classList.add('active');
+  document.getElementById('tutorial-card').classList.add('active');
   renderTutStep();
 }
 
 function endTutorial() {
-  document.getElementById('tutorial-overlay').classList.remove('active');
+  document.getElementById('tut-backdrop').classList.remove('active');
+  document.getElementById('tutorial-card').classList.remove('active');
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('tut-highlight'));
   try { localStorage.setItem('tut_done_v1', '1'); } catch(e) {}
-}
-
-function handleOverlayClick(e) {
-  if (e.target === document.getElementById('tutorial-overlay')) endTutorial();
 }
 
 function tutNext() {
@@ -2798,28 +2843,84 @@ function renderTutStep() {
   const step = TUT_STEPS[tutStep];
   const total = TUT_STEPS.length;
 
-  // Highlight corresponding tab button
+  // Highlight tab
   document.querySelectorAll('.tab-btn').forEach((b, i) => {
     b.classList.toggle('tut-highlight', i === step.tabIdx);
   });
-  // Switch to the tab if applicable (skip tab-switch on intro/outro)
   if (step.tabIdx >= 0) switchTab(step.tabIdx);
 
   document.getElementById('tut-badge').textContent = `步骤 ${tutStep + 1} / ${total}`;
   document.getElementById('tut-title').textContent = step.title;
   document.getElementById('tut-body').innerHTML = step.body;
 
-  // Progress dots
   document.getElementById('tut-dots').innerHTML = TUT_STEPS.map((_, i) =>
     `<div class="tut-dot ${i === tutStep ? 'active' : ''}"></div>`
   ).join('');
 
-  // Buttons
-  const prevBtn = document.getElementById('tut-prev');
-  const nextBtn = document.getElementById('tut-next');
-  prevBtn.style.display = tutStep === 0 ? 'none' : '';
-  nextBtn.textContent = tutStep === total - 1 ? '完成 ✓' : '下一步 →';
+  document.getElementById('tut-prev').style.display = tutStep === 0 ? 'none' : '';
+  document.getElementById('tut-next').textContent = tutStep === total - 1 ? '完成 ✓' : '下一步 →';
+
+  // Trigger re-animation
+  const card = document.getElementById('tutorial-card');
+  card.classList.remove('active');
+  void card.offsetWidth; // reflow
+  card.classList.add('active');
+
+  positionTutCard(step.tabIdx);
 }
+
+function positionTutCard(tabIdx) {
+  const card = document.getElementById('tutorial-card');
+  const arrow = document.getElementById('tut-arrow');
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const cardW = Math.min(460, vw - 24);
+  card.style.width = cardW + 'px';
+
+  if (tabIdx < 0) {
+    // No tab — center on screen
+    card.style.left = Math.round((vw - cardW) / 2) + 'px';
+    card.style.top = Math.round(vh * 0.22) + 'px';
+    arrow.style.display = 'none';
+    return;
+  }
+
+  const tabBtn = document.querySelectorAll('.tab-btn')[tabIdx];
+  if (!tabBtn) return;
+  const rect = tabBtn.getBoundingClientRect();
+
+  // Preferred: card below the tab bar
+  const topBelow = rect.bottom + 16;
+  // Fallback: card above (if too close to bottom)
+  const cardH = card.offsetHeight || 260;
+  const top = (topBelow + cardH < vh - 12) ? topBelow : Math.max(12, rect.top - cardH - 16);
+
+  // Horizontal: center below tab, clamped to viewport
+  let left = Math.round(rect.left + rect.width / 2 - cardW / 2);
+  left = Math.max(12, Math.min(left, vw - cardW - 12));
+
+  card.style.top = top + 'px';
+  card.style.left = left + 'px';
+
+  // Arrow: points to tab center from card
+  const arrowCenter = Math.round(rect.left + rect.width / 2 - left);
+  const clampedArrow = Math.max(24, Math.min(arrowCenter, cardW - 24));
+  arrow.style.display = 'block';
+  arrow.style.left = clampedArrow + 'px';
+
+  // If card is below tab → arrow points up; if card is above → arrow points down
+  const isBelow = top >= rect.bottom;
+  arrow.classList.toggle('up', isBelow);
+  arrow.classList.toggle('down', !isBelow);
+}
+
+// Reposition on resize
+window.addEventListener('resize', () => {
+  const card = document.getElementById('tutorial-card');
+  if (card && card.classList.contains('active')) {
+    positionTutCard(TUT_STEPS[tutStep].tabIdx);
+  }
+});
 </script>
 </body>
 </html>
