@@ -1546,7 +1546,8 @@ function optimizeBudget() {
         </div>
         <div class="stat-box">
           <div class="stat-val">${fmtRM(totalEV).replace('RM ','RM')}</div>
-          <div class="stat-lbl">综合期望值</div>
+          <div style="font-size:10px;color:var(--red);margin-top:2px">净亏 ${fmtRM(totalCost - totalEV).replace('RM ','−RM')}</div>
+          <div class="stat-lbl">理论回报</div>
         </div>
       </div>
       <div style="overflow-x:auto">
@@ -1646,6 +1647,7 @@ function drawJackpotChart(split, price) {
   const dpr = window.devicePixelRatio || 1;
   const W = canvas.parentElement.clientWidth - 36;
   const H = 220;
+  if (W <= 0) return;
   canvas.style.width = W + 'px';
   canvas.style.height = H + 'px';
   canvas.width = W * dpr;
@@ -1875,7 +1877,7 @@ function generateRM10() {
   let totalEV = 0;
 
   const rows = s.bets.map(b => {
-    const numClean = b.num.replace('X','0');
+    const numClean = b.num.replace(/[RX]/g, '0');
     const digits = numClean.split('');
     let coverage = 1;
     let odds1st = 0;
@@ -1962,7 +1964,8 @@ function generateRM10() {
         </div>
         <div class="stat-box">
           <div class="stat-val">${fmtRM(t4Operator === 'all' ? totalEV * 3 : totalEV)}</div>
-          <div class="stat-lbl">综合期望值</div>
+          <div style="font-size:10px;color:var(--red);margin-top:2px">净亏 ${fmtRM(t4Operator === 'all' ? totalCost*3 - totalEV*3 : totalCost - totalEV).replace('RM ','−RM')}</div>
+          <div class="stat-lbl">理论回报</div>
         </div>
       </div>
       <div style="overflow-x:auto">
@@ -2026,9 +2029,8 @@ function genMixed() {
   directNums.push(...d1);
   // mBox: with repeats
   const templates = ['1123','2244','5577','6688','9900','1133'];
-  for (let i = 0; i < 2; i++) {
-    mboxNums.push(templates[Math.floor(Math.random() * templates.length)]);
-  }
+  const shuffled = templates.slice().sort(() => Math.random() - 0.5);
+  mboxNums.push(shuffled[0], shuffled[1]);
   return { nums: [...directNums, ...mboxNums], direct: directNums, mbox: mboxNums };
 }
 
@@ -2116,7 +2118,7 @@ async function loadResults(force = false) {
     const res = await fetch('./data/results.json?_=' + Date.now());
     if (!res.ok) throw new Error('HTTP ' + res.status);
     t5Data = await res.json();
-    t5ActiveIdx = 0;
+    if (t5ActiveIdx >= t5Data.draws.length) t5ActiveIdx = 0;
     renderDateTabs();
     renderResults();
     const upd = new Date(t5Data.lastUpdated);
@@ -2135,7 +2137,7 @@ function renderDateTabs() {
   const wrap = document.getElementById('t5-date-tabs');
   wrap.innerHTML = t5Data.draws.map((d, i) => `
     <button onclick="t5ActiveIdx=${i};renderResults();document.querySelectorAll('.t5-date-btn').forEach((b,j)=>b.classList.toggle('selected',j===${i}))"
-      class="radio-btn t5-date-btn ${i === 0 ? 'selected' : ''}"
+      class="radio-btn t5-date-btn ${i === t5ActiveIdx ? 'selected' : ''}"
       style="font-size:12px;padding:6px 12px;min-width:auto">
       ${d.dateDisplay || d.date}
     </button>
