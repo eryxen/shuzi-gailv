@@ -1,30 +1,38 @@
 {
-  "lastUpdated": "2026-03-25T21:00:00+08:00",
+  "lastUpdated": "2026-03-28T13:56:39.308Z",
   "jackpots": {
-    "magnum": {
-      "4dJackpot": 25000000,
-      "4dJackpotGold": 12000000
-    },
-    "damacai": {
-      "jackpot1": 5200000,
-      "jackpot2": 100000,
-      "3dJackpot": 320000
-    },
-    "toto": {
-      "4dJackpot": 2000000
-    }
+    "magnum": {},
+    "damacai": {},
+    "toto": {}
   },
   "draws": [
+    {
+      "date": "2026-03-28",
+      "dateDisplay": "2026年3月28日 (六)",
+      "operators": {
+        "magnum": {
+          "name": "万能 Magnum 4D",
+          "drawNo": "",
+          "first": "0000",
+          "second": "0000",
+          "third": "0000",
+          "special": [],
+          "consolation": []
+        },
+        "damacai": null,
+        "toto": null
+      }
+    },
     {
       "date": "2026-03-25",
       "dateDisplay": "2026年3月25日 (三)",
       "operators": {
         "magnum": {
           "name": "万能 Magnum 4D",
-          "drawNo": "345/26",
-          "first": "0342",
-          "second": "6100",
-          "third": "3212",
+          "drawNo": "",
+          "first": "0000",
+          "second": "0000",
+          "third": "0000",
           "special": [],
           "consolation": []
         },
@@ -38,7 +46,7 @@
           "consolation": []
         },
         "toto": {
-          "name": "体育彩票 Toto 4D",
+          "name": "体育彩票 Sports Toto",
           "drawNo": "6108/26",
           "first": "8666",
           "second": "8159",
@@ -46,6 +54,142 @@
           "special": [],
           "consolation": []
         }
+      }
+    },
+    {
+      "date": "2026-03-22",
+      "dateDisplay": "2026年3月22日 (日)",
+      "operators": {
+        "magnum": {
+          "name": "万能 Magnum 4D",
+          "drawNo": "",
+          "first": "0000",
+          "second": "0000",
+          "third": "0000",
+          "special": [],
+          "consolation": []
+        },
+        "damacai": null,
+        "toto": null
+      }
+    },
+    {
+      "date": "2026-03-21",
+      "dateDisplay": "2026年3月21日 (六)",
+      "operators": {
+        "magnum": {
+          "name": "万能 Magnum 4D",
+          "drawNo": "",
+          "first": "0000",
+          "second": "0000",
+          "third": "0000",
+          "special": [],
+          "consolation": []
+        },
+        "damacai": null,
+        "toto": null
+      }
+    },
+    {
+      "date": "2026-03-18",
+      "dateDisplay": "2026年3月18日 (三)",
+      "operators": {
+        "magnum": {
+          "name": "万能 Magnum 4D",
+          "drawNo": "",
+          "first": "0000",
+          "second": "0000",
+          "third": "0000",
+          "special": [],
+          "consolation": []
+        },
+        "damacai": null,
+        "toto": null
+      }
+    },
+    {
+      "date": "2026-03-15",
+      "dateDisplay": "2026年3月15日 (日)",
+      "operators": {
+        "magnum": {
+          "name": "万能 Magnum 4D",
+          "drawNo": "",
+          "first": "0000",
+          "second": "0000",
+          "third": "0000",
+          "special": [],
+          "consolation": []
+        },
+        "damacai": null,
+        "toto": null
+      }
+    },
+    {
+      "date": "2026-03-14",
+      "dateDisplay": "2026年3月14日 (六)",
+      "operators": {
+        "magnum": {
+          "name": "万能 Magnum 4D",
+          "drawNo": "",
+          "first": "0000",
+          "second": "0000",
+          "third": "0000",
+          "special": [],
+          "consolation": []
+        },
+        "damacai": null,
+        "toto": null
+      }
+    },
+    {
+      "date": "2026-03-11",
+      "dateDisplay": "2026年3月11日 (三)",
+      "operators": {
+        "magnum": {
+          "name": "万能 Magnum 4D",
+          "drawNo": "",
+          "first": "0000",
+          "second": "0000",
+          "third": "0000",
+          "special": [],
+          "consolation": []
+        },
+        "damacai": null,
+        "toto": null
+      }
+    },
+    {
+      "date": "2026-03-08",
+      "dateDisplay": "2026年3月8日 (日)",
+      "operators": {
+        "magnum": {
+          "name": "万能 Magnum 4D",
+          "drawNo": "",
+          "first": "0000",
+          "second": "0000",
+          "third": "0000",
+          "special": [],
+          "consolation": []
+        },
+        "damacai": null,
+        "toto": null
+      }
+    },
+    {
+      "date": "2026-03-07",
+      "dateDisplay": "2026年3月7日 (六)",
+      "operators": {
+        "magnum": {
+          "name": "万能 Magnum 4D",
+          "drawNo": "",
+          "first": "0000",
+          "second": "0000",
+          "third": "0000",
+          "special": [],
+          "consolation": []
+        },
+        "damacai": null,
+        "toto": null
       }
     }
   ]
