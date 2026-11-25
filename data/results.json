@@ -1,11 +1,28 @@
 {
-  "lastUpdated": "2026-11-22T20:17:43.817Z",
+  "lastUpdated": "2026-11-25T22:24:47.905Z",
   "jackpots": {
     "magnum": {},
     "damacai": {},
     "toto": {}
   },
   "draws": [
+    {
+      "date": "2026-11-25",
+      "dateDisplay": "2026年11月25日 (三)",
+      "operators": {
+        "magnum": {
+          "name": "万能 Magnum 4D",
+          "drawNo": "",
+          "first": "0000",
+          "second": "0000",
+          "third": "0000",
+          "special": [],
+          "consolation": []
+        },
+        "damacai": null,
+        "toto": null
+      }
+    },
     {
       "date": "2026-11-22",
       "dateDisplay": "2026年11月22日 (日)",
@@ -145,23 +162,6 @@
     {
       "date": "2026-11-04",
       "dateDisplay": "2026年11月4日 (三)",
-      "operators": {
-        "magnum": {
-          "name": "万能 Magnum 4D",
-          "drawNo": "",
-          "first": "0000",
-          "second": "0000",
-          "third": "0000",
-          "special": [],
-          "consolation": []
-        },
-        "damacai": null,
-        "toto": null
-      }
-    },
-    {
-      "date": "2026-11-01",
-      "dateDisplay": "2026年11月1日 (日)",
       "operators": {
         "magnum": {
           "name": "万能 Magnum 4D",
